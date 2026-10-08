@@ -1,0 +1,23 @@
+{
+  "target": "webhook",
+  "endpoint": "https://example.com/webhook/wenshu-leads",
+  "method": "POST",
+  "timeoutMs": 10000,
+  "headers": {},
+  "fieldMap": {
+    "source": "source",
+    "phone": "phone",
+    "name": "name",
+    "company": "company",
+    "language": "language",
+    "businessType": "business_type",
+    "pageTitle": "page_title",
+    "pageUrl": "page_url",
+    "referrer": "referrer",
+    "userAgent": "user_agent",
+    "submittedAt": "submitted_at"
+  },
+  "extra": {
+    "site": "wenshuzhilv"
+  }
+}

@@ -1,0 +1,22 @@
+JS:, function(){ closeMask(qrMask); });
+
+  
+
+  /* ---------- AI 顾问气泡 ---------- */
+  var fab = $(	cases.en.html|data-social.en.html|data-source.en.html|data-trends.en.html|product-growth.en.html|product-insight.en.html|product-itinerary.en.html|product-resource.en.html|product-wenxiaolv.en.html|solution-boutique.en.html|solution-convert.en.html|solution-data.en.html|solution-fulfill.en.html|solution-ground-ops.en.html|solution-growth.en.html|solution-plan.en.html|solution-scenic.en.html|solution-travel-agency.en.html|tech-knowledge.en.html|tech-mining.en.html|tech-multilingual.en.html
+JS:价格按合作结构报价：基础技术服务费 + 效果绑定的运营分成，不赚服务费差价。投放预算由您直充官方媒体后台，每一分消耗都透明可查。留下Contact，顾问会为您出一份专属方案。	cases.en.html|data-social.en.html|data-source.en.html|data-trends.en.html|product-growth.en.html|product-insight.en.html|product-itinerary.en.html|product-resource.en.html|product-wenxiaolv.en.html|solution-boutique.en.html|solution-convert.en.html|solution-data.en.html|solution-fulfill.en.html|solution-ground-ops.en.html|solution-growth.en.html|solution-plan.en.html|solution-scenic.en.html|solution-travel-agency.en.html|tech-knowledge.en.html|tech-mining.en.html|tech-multilingual.en.html
+JS:).forEach(closeMask);
+  });
+
+  /* ---------- 留资模态窗 ---------- */
+  var leadMask = $(	cases.en.html|data-social.en.html|data-source.en.html|data-trends.en.html|product-growth.en.html|product-insight.en.html|product-itinerary.en.html|product-resource.en.html|product-wenxiaolv.en.html|solution-boutique.en.html|solution-convert.en.html|solution-data.en.html|solution-fulfill.en.html|solution-ground-ops.en.html|solution-growth.en.html|solution-plan.en.html|solution-scenic.en.html|solution-travel-agency.en.html|tech-knowledge.en.html|tech-mining.en.html|tech-multilingual.en.html
+JS:) sendChat(); });
+
+  
+
+  /* demo 演示区标注点点击联动（technology 页） */
+  $$(	cases.en.html|data-social.en.html|data-source.en.html|data-trends.en.html|product-growth.en.html|product-insight.en.html|product-itinerary.en.html|product-resource.en.html|product-wenxiaolv.en.html|solution-boutique.en.html|solution-convert.en.html|solution-data.en.html|solution-fulfill.en.html|solution-ground-ops.en.html|solution-growth.en.html|solution-plan.en.html|solution-scenic.en.html|solution-travel-agency.en.html|tech-knowledge.en.html|tech-mining.en.html|tech-multilingual.en.html
+JS:); });
+
+  /* ---------- WeChat浮层 ---------- */
+  var qrMask = $(	cases.en.html|data-social.en.html|data-source.en.html|data-trends.en.html|product-growth.en.html|product-insight.en.html|product-itinerary.en.html|product-resource.en.html|product-wenxiaolv.en.html|solution-boutique.en.html|solution-convert.en.html|solution-data.en.html|solution-fulfill.en.html|solution-ground-ops.en.html|solution-growth.en.html|solution-plan.en.html|solution-scenic.en.html|solution-travel-agency.en.html|tech-knowledge.en.html|tech-mining.en.html|tech-multilingual.en.html

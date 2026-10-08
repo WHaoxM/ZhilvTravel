@@ -1,0 +1,17 @@
+dist/
+node_modules/
+remotion-studio/node_modules/
+remotion-studio/out/
+remotion-studio/qc/
+remotion-studio/.remotion/
+output/
+.sites-artifacts/
+.env
+.env.*
+!.env.example
+lead.config.json
+*.log
+*.tar.gz
+*.tgz
+Thumbs.db
+.DS_Store

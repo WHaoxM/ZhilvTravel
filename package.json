@@ -1,0 +1,19 @@
+{
+  "name": "wenshuzhilv-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node scripts/serve-static-site.js",
+    "polish": "node scripts/polish-site.js",
+    "build": "node scripts/build-pages.js && node scripts/build-en.js && node scripts/build-en-pages.js && node scripts/build-static-site.js",
+    "validate": "node scripts/validate-static-site.js && node --test scripts/test-wenshu-contact.js",
+    "test:home-responsive": "node scripts/test-home-responsive.js",
+    "test:home-growth": "node scripts/test-home-growth-media.js",
+    "test:home-reception": "node scripts/test-home-reception-media.js",
+    "test:home-fulfillment": "node scripts/test-home-fulfillment-media.js",
+    "test:home-metrics": "node scripts/test-home-metrics.js",
+    "test:social": "node scripts/test-social-page.js",
+    "test:policy-navigation": "node scripts/test-policy-navigation.js"
+  }
+}

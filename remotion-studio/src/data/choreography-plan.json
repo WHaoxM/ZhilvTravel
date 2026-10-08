@@ -1,0 +1,73 @@
+{
+  "conceptAngle": "同一张文数智旅工作台中，AI 从客户需求生成可编辑行程，再由顾问调整资源并确认报价。",
+  "referenceFidelity": "high fidelity target; first editable reconstruction, not exact pixel match",
+  "visualSystem": {
+    "canvas": "1920x1080",
+    "fps": 30,
+    "safeMargin": 80,
+    "persistentObjects": ["product-window", "Emma-request", "plan-costing", "travel-strategy-sidebar"],
+    "semantics": {"blue": "AI processing / selection", "green": "confirmed / saved", "orange": "pending"}
+  },
+  "planGeneration": [
+    {
+      "id": "opening",
+      "startFrame": 0,
+      "endFrame": 132,
+      "statement": "AI 方案生成完整过程",
+      "actors": ["title", "product-window"],
+      "setup": "工作台淡入",
+      "action": "标题建立主题",
+      "result": "Emma 家庭需求在工作台上持续可见",
+      "handoff": "聚焦创建方案按钮"
+    },
+    {
+      "id": "request-to-plan",
+      "startFrame": 102,
+      "endFrame": 222,
+      "statement": "根据客户需求生成计划",
+      "actors": ["Emma-request", "generate-button", "cursor"],
+      "setup": "客户目的地、人数、预算与特殊需求已归集",
+      "action": "点击创建客户专属 AI 方案",
+      "result": "工作台转入生成状态",
+      "handoff": "显示可追踪的生成步骤"
+    },
+    {
+      "id": "generation",
+      "startFrame": 222,
+      "endFrame": 522,
+      "statement": "AI 理解需求、匹配资源、结合旅策并校验报价",
+      "actors": ["six-generation-steps", "preview-panel", "plan-costing"],
+      "setup": "生成步骤待处理",
+      "action": "按序完成六个有结果的步骤",
+      "result": "方案预览与资源建议逐项形成",
+      "handoff": "呈现可编辑方案"
+    },
+    {
+      "id": "preview",
+      "startFrame": 522,
+      "endFrame": 642,
+      "statement": "生成完成：当前可编辑方案",
+      "actors": ["itinerary-preview", "plan-costing"],
+      "setup": "方案生成中",
+      "action": "展示按天行程和预算校验",
+      "result": "¥19,860 的方案预览可见",
+      "handoff": "进入易配操作台"
+    },
+    {
+      "id": "manual-adjustment",
+      "startFrame": 642,
+      "endFrame": 961,
+      "statement": "调整路线、替换资源、核算报价",
+      "actors": ["day-rows", "resource-library", "plan-costing", "cursor"],
+      "setup": "五日行程已生成",
+      "action": "突出第三天并选中资源库中的可替换项",
+      "result": "顾问确认对客方案，行程与报价同步保存",
+      "handoff": "终帧停留在可输出状态"
+    }
+  ],
+  "audioEvents": [],
+  "notes": [
+    "现有两段 MP4 为对位参考，任何含字视频或截图都不作为最终画面底图。",
+    "文档要求保持原镜头顺序、时长、构图；本首版后续仍须逐帧校对切点。"
+  ]
+}

@@ -1,0 +1,57 @@
+;
+  var $ = function(s, c){ return (c||document).querySelector(s); };
+  var $$ = function(s, c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+
+  /* ---------- 导航滚动态 + 回到顶部按钮 ---------- */
+  var nav = $(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+);
+      title.textContent = m.dataset.title;
+      desc.textContent = m.dataset.desc;
+    });
+  });
+
+  /* 5 秒后自动弹出欢迎（每会话一次） */
+  if(!autoPopped){
+    setTimeout(function(){
+      if(!panel.classList.contains(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+}); });
+
+  /* ---------- 滚动进入动效 ---------- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+).forEach(function(el){ io.observe(el); });
+
+  
+
+  /* ---------- 模态窗通用逻辑 ---------- */
+  function openMask(m){ m.classList.add(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+, function(){ closeMask(qrMask); });
+
+  
+
+  /* ---------- AI 顾问气泡 ---------- */
+  var fab = $(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+标准链路 <b>7 天上线</b>：DAY 1 需求定调 → DAY 2-3 系统基建 → DAY 4-5 全域造势 → DAY 6-7 询盘转化。旺季不等人，越早启动越早承接红利。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+).forEach(closeMask);
+  });
+
+  /* ---------- 留资模态窗 ---------- */
+  var leadMask = $(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+我们采用「基础技术服务费 + 广告预算自主充值 + 效果绑定运营分成」的透明结构：广告费直充官方后台、明细实时可查，运营分成与您的增长效果绑定。具体金额以专属方案为准。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+价格按合作结构报价：基础技术服务费 + 效果绑定的运营分成，不赚服务费差价。投放预算由您直充官方媒体后台，每一分消耗都透明可查。留下联系方式，顾问会为您出一份专属方案。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+好的！请在下方输入框留下您的手机号，产品顾问将在 1 个工作日内联系您安排演示；也可以拨打热线 <b>13558835750</b> 直接预约。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+) sendChat(); });
+
+  
+
+  /* demo 演示区标注点点击联动（technology 页） */
+  $$(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+); });
+
+  /* ---------- 微信咨询浮层 ---------- */
+  var qrMask = $(	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+已收到您的手机号，产品顾问将在 <b>1 个工作日内</b>与您联系。您也可以先看看我们的 <b>7 天上线</b> 流程～	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+收到！关于这个问题，建议让顾问为您详细解答——留下手机号，或拨打热线 <b>13558835750</b>。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+这个问题顾问为您详细解答更准确～留下手机号，顾问 1 个工作日内联系您。	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
+获取专属增长方案	cases.html|data-social.html|data-source.html|data-trends.html|product-growth.html|product-insight.html|product-itinerary.html|product-resource.html|product-wenxiaolv.html|solution-boutique.html|solution-convert.html|solution-data.html|solution-fulfill.html|solution-ground-ops.html|solution-growth.html|solution-plan.html|solution-scenic.html|solution-travel-agency.html|tech-knowledge.html|tech-mining.html|tech-multilingual.html
