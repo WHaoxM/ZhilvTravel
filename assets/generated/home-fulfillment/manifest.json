@@ -1,0 +1,65 @@
+{
+  "source": "user attachments supplied 2026-09-23",
+  "files": [
+    {
+      "file": "analytics-channel-performance.png",
+      "width": 287,
+      "height": 161,
+      "sha256": "e9d9ca398c8abcb40d58734bcb6280683d1309cdee3f275fae9d5ba1725f5fde",
+      "originalFilename": "codex-clipboard-a5f684c7-3f0e-47d1-b3b3-439649407846.png",
+      "usage": "数据看板与客户资产·渠道",
+      "altZh": "渠道投放效果分析看板",
+      "altEn": "Channel performance analytics dashboard"
+    },
+    {
+      "file": "analytics-conversion-growth.png",
+      "width": 285,
+      "height": 161,
+      "sha256": "f1087f6f57176a7fb240dde1b4d9aba1a0d5d3ecaa5db68ed56435fecb40dded",
+      "originalFilename": "codex-clipboard-e4fa642f-ef07-4dae-9873-4110628c3ccc.png",
+      "usage": "数据看板与客户资产·增长",
+      "altZh": "成交增长分析看板",
+      "altEn": "Conversion growth analytics dashboard"
+    },
+    {
+      "file": "analytics-overview.png",
+      "width": 278,
+      "height": 156,
+      "sha256": "083cee38d6c89a5853ab7285f19b60b3568b6905729e5304bd0d4d91aa12cc1e",
+      "originalFilename": "codex-clipboard-0e215f92-b0e7-4e09-982c-88d34100b7b3.png",
+      "usage": "数据看板与客户资产·总览",
+      "altZh": "旅游业务数据总览看板",
+      "altEn": "Tourism business analytics overview"
+    },
+    {
+      "file": "customer-trip-calendar.png",
+      "width": 280,
+      "height": 158,
+      "sha256": "b4a48f97b486db17aeb048cd8ce12c8df68ffc4ddf0dab924a351627b73d2e62",
+      "originalFilename": "codex-clipboard-c875f6de-d91e-47cb-a636-0d71a55da87a.png",
+      "usage": "复购营销",
+      "altZh": "客户行程日历界面",
+      "altEn": "Customer trip calendar interface"
+    },
+    {
+      "file": "order-lifecycle-flow.png",
+      "width": 863,
+      "height": 359,
+      "sha256": "c951e428f8b7c5ac443854cb3943b4c85eeec747e30f0dc19fe8b35ab3322a9d",
+      "originalFilename": "codex-clipboard-5a7fbae4-8abe-481a-8394-412b1ce7f31d.png",
+      "usage": "订单全链管控",
+      "altZh": "订单全链路节点箭头流程图",
+      "altEn": "Order lifecycle arrow flow"
+    },
+    {
+      "file": "supplier-resource-map.png",
+      "width": 275,
+      "height": 155,
+      "sha256": "64d10f6c7400486af60c062e8cc37ed1feb71c5a8cc3fcdd15c6cb01c4d6af75",
+      "originalFilename": "codex-clipboard-630cca18-6a5a-494a-ae1f-32af0f9f558f.png",
+      "usage": "供应商协同",
+      "altZh": "一站式旅游资源库，包含景点、车辆、酒店和特色体验",
+      "altEn": "One-stop travel resource library with attractions, vehicles, hotels and experiences"
+    }
+  ]
+}

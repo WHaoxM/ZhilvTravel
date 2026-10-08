@@ -1,0 +1,38 @@
+[
+  {
+    "filename": "intent-tags-malaysia-family-trip.png",
+    "originalFilename": "codex-clipboard-9ecf4b37-174e-46bf-8a48-685bec6db3ec.png",
+    "width": 820,
+    "height": 469,
+    "sha256": "913ddc4fc5a7f6cb6b1af281175b8a8c1b2592236fba878ccbf031bb750a4d1f",
+    "usage": "intent-mining-carousel",
+    "altZh": "客户标签截图：马来西亚家庭旅行需求",
+    "altEn": "Customer tag screenshot: Malaysia family trip requirements",
+    "focusPosition": "center center"
+  },
+  {
+    "filename": "intent-tags-multicity-preferences.png",
+    "originalFilename": "codex-clipboard-dc9625f7-1a20-48df-8f44-3fa1ce1bd4ff.png",
+    "duplicateSourceFilenames": [
+      "codex-clipboard-26bcc7bb-fa3a-443d-b44e-b5a7cf2aa9f1.png"
+    ],
+    "width": 844,
+    "height": 609,
+    "sha256": "9c396b361bc61f6cb939a05b63573fbe55e2706ae06a0b181bd9203ad4443b6c",
+    "usage": "intent-mining-carousel",
+    "altZh": "客户标签截图：多目的地行程偏好与预算",
+    "altEn": "Customer tag screenshot: multi-destination preferences and budget",
+    "focusPosition": "center 31%"
+  },
+  {
+    "filename": "lead-groups-workspace.png",
+    "originalFilename": "codex-clipboard-225c81ff-09c6-40c5-b095-21f81adbbc10.png",
+    "width": 647,
+    "height": 693,
+    "sha256": "8cca571a7edab759f8e77d684409610a04299e9409522f1ee00f53fd5c3d0eca",
+    "usage": "lead-scoring-card",
+    "altZh": "客户会话分组界面截图：潜在客户、已出行、已付款、沟通中与高意向",
+    "altEn": "Customer conversation groups: prospects, traveled, paid, in conversation, and high intent",
+    "focusPosition": "left 72%"
+  }
+]

@@ -15,11 +15,15 @@ npm run validate
 
 `dist/` 是可直接上传的静态站点目录，含中文首页、英文首页、子页、图片、封面与三支正式 MP4。将 `dist/` 作为静态站点根目录部署即可。若用 Sites 更新原站点，保留 `.openai/hosting.json` 中的项目 ID，并通过有权限的 Sites 发布流程提交本仓库的同一来源版本；仅推送 GitHub **不会自动更新线上站点**。
 
+`npm run validate` 不需要安装额外依赖。`test:home-responsive`、`test:social` 等浏览器回归脚本是可选开发测试，运行时还需可用的 Playwright 和 Chromium；相应媒体清单保存在 `assets/generated/*/manifest.json`，不会进入部署目录。
+
 联系表单依赖外部接收接口。默认构建面向现有 `xuntingtravel.com` 接口；部署到其他业务环境前，可复制 `lead.config.example.json` 为本地 `lead.config.json` 并配置自己的接收端。不要将真实密钥或 `lead.config.json` 提交到公开仓库。
 
 ## 视频工程
 
 `remotion-studio/` 保留 `TourismAIEngine`、`ReceptionHiFi`、`PlanHiFi` 的源码与必要静帧素材。网站正式播放的成片位于 `assets/video/`；同目录下未被网页引用的三支原片仅供复用原始音轨和对照，不会进入 `dist/`。
+
+现版三支视频的分镜、关键帧、可选 AE 表达式对照和发布检查清单见 [`remotion-studio/docs/video-shots-and-qc.md`](remotion-studio/docs/video-shots-and-qc.md)。两支长片的主要可读区域、焦点字幕及中央演示区已由代码绘制，但接待片的部分推荐方案卡和非焦点背景仍有原片静帧；不能将其视为所有 UI 文字均已矢量化。当前交付是 Remotion 工程，不包含 `.aep` 文件。
 
 ```bash
 cd remotion-studio
