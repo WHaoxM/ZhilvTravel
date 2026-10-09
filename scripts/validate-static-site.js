@@ -60,6 +60,7 @@ require('./test-video-loading.js');
 require('./test-customer-copy.js');
 require('./test-home-image-coverage.js');
 require('./test-home-image-quality.js');
+require('./test-navigation-structure.js');
 
 function extractRefs(html) {
   const refs = [];

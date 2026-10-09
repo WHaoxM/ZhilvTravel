@@ -78,6 +78,7 @@ function loadSharedPatches() {
     [">洞察</a>", ">Insights</a>"],
     ["浏览文数智旅", "Browse Wenshu Travel"],
     ["打开导航菜单", "Open navigation"],
+    ["解决方案当前位置", "Current solution"],
     ["关闭导航菜单", "Close navigation"],
     ["关闭导航", "Close navigation"],
     [">产品</summary>", ">Products</summary>"],

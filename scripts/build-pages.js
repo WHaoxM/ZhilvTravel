@@ -120,6 +120,12 @@ body.subpage{padding-top:0}
              radial-gradient(50% 80% at 85% 80%,rgba(0,180,255,.22),transparent 60%);
 }
 .sp-banner>.sp-banner-in{position:relative;z-index:1;padding:64px 24px;max-width:960px}
+.sp-solution-location{display:flex;justify-content:center;align-items:center;gap:10px;margin:0 0 18px;color:#d5e4ff;font-size:14px;line-height:1.5}
+.sp-solution-location a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.sp-solution-location a:hover,.sp-solution-location a:focus-visible{color:#fff}
+.sp-solution-location .location-separator{opacity:.72}
+.sp-solution-location [aria-current="page"]{font-weight:700;color:#fff}
+.sp-solution-location a:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:2px}
 .sp-banner .eyebrow-w{
   display:inline-block;font-size:14px;font-weight:600;letter-spacing:.14em;
   color:#9ec5ff;text-transform:uppercase;margin-bottom:20px;
@@ -304,6 +310,10 @@ body.subpage{padding-top:0}
 .tech-banner>.tech-banner-in{
   position:relative;z-index:1;width:min(1216px,100% - 48px);margin:0 auto;
 }
+.tech-banner .sp-solution-location{justify-content:flex-start;margin:0 0 14px;color:#465b7a;font-size:13px}
+.tech-banner .sp-solution-location [aria-current="page"]{color:#17284a}
+.tech-banner .sp-solution-location a:hover,.tech-banner .sp-solution-location a:focus-visible{color:var(--primary)}
+.tech-banner .sp-solution-location a:focus-visible{outline-color:var(--primary)}
 .tech-banner .tech-eyebrow{
   display:inline-block;font-size:14px;font-weight:600;letter-spacing:.14em;
   color:var(--primary);text-transform:uppercase;margin-bottom:16px;
@@ -585,7 +595,8 @@ function renderPage(cfg) {
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230061ff'/%3E%3Cpath d='M8 20c4-8 12-8 16 0' stroke='%23ffffff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='11' r='3' fill='%23ffffff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet"></noscript>
 ${cssBlock}
 ${SUBPAGE_CSS}
 </style>
@@ -741,7 +752,7 @@ function skeleton(cfg) {
 <!-- ================= ① banner（有 bannerBg 时用真实头图 + 深蓝遮罩，对齐知衣 background-image cover） ================= -->
 <section class="sp-banner${cfg.bannerBg ? " has-bg" : ""}"${cfg.bannerBg ? ` style="background-image:url('../assets/${cfg.bannerBg}')"` : ""}>
   <div class="sp-banner-in">
-    <span class="eyebrow-w">${cfg.eyebrow}</span>
+${cfg.slug.startsWith("solution-") ? `    <nav class="sp-solution-location" aria-label="解决方案当前位置"><a href="../index.html#solution">解决方案</a><span class="location-separator" aria-hidden="true">/</span><span aria-current="page">${cfg.title.split(" ·")[0]}</span></nav>\n` : ""}    <span class="eyebrow-w">${cfg.eyebrow}</span>
     <h1 class="title">${cfg.h1}</h1>
     <div class="tip">${cfg.bannerTip}</div>
     <button class="link-btn" data-lead data-source="${cfg.slug}-banner" data-title="获取专属增长方案"><span>免费获取方案</span><span class="arr">→</span></button>
@@ -837,7 +848,7 @@ function techSkeleton(cfg) {
 <!-- ================= ① banner（technology 版式：浅色底 + 左对齐，对齐知衣 596px） ================= -->
 <section class="tech-banner"${cfg.bannerBg ? ` style="background-image:url('../assets/${cfg.bannerBg}')"` : ""}>
   <div class="tech-banner-in">
-    <span class="tech-eyebrow">${cfg.eyebrow}</span>
+${/^(?:data|tech)-/.test(cfg.slug) ? `    <nav class="sp-solution-location" aria-label="解决方案当前位置"><a href="../index.html#solution">解决方案</a><span class="location-separator" aria-hidden="true">/</span><span aria-current="page">${cfg.h1.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()}</span></nav>\n` : ""}    <span class="tech-eyebrow">${cfg.eyebrow}</span>
     <h1 class="tech-title">${cfg.h1}</h1>
     <div class="tech-sub">${cfg.bannerTip}</div>
     <button class="tech-cta" data-lead data-source="${cfg.slug}-banner" data-title="获取专属增长方案"><span>预约体验</span><span>→</span></button>
