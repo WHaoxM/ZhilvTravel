@@ -29,6 +29,12 @@ out = out
   .replace(/href="pages\//g, 'href="../pages/')
   .replace(/href="#"/g, 'href="index.html"');
 
+/* Hidden typewriter sizing copy must use the same English strings as the animated JS. */
+out = out
+  .replace('class="hero-typewriter-sizer" aria-hidden="true">海外获客成本直降 60%+，游客数据 100% 归你', 'class="hero-typewriter-sizer" aria-hidden="true">Acquisition cost down 60%+. Your customer data, 100% yours.')
+  .replace('class="hero-typewriter-sizer" aria-hidden="true">AI Agent 7×24 多语种接待，深夜商机不再流失', 'class="hero-typewriter-sizer" aria-hidden="true">AI agents answer in 12 languages, 24/7 — no more lost midnight leads.')
+  .replace('class="hero-typewriter-mobile">AI Agent 7×24 多语种接待，深夜商机不再流失', 'class="hero-typewriter-mobile">AI agents answer in 12 languages, 24/7 — no more lost midnight leads.');
+
 /* ---------- 2b. 英文首页内部子页链接 → en 版（保持全站英文语境不断裂） ---------- */
 /* pages/x.html（rebase 后）→ pages/x.en.html；同页锚点保留 */
 out = out.replace(
@@ -127,6 +133,7 @@ const T = [
   ["<span>解决方案</span>", "<span>Solutions</span>"],
   ["<span>关于我们</span>", "<span>About</span>"],
   [">首页</a>", ">Home</a>"],
+  [">登录<", ">Log in<"],
   [">客户案例</a>", ">Case Studies</a>"],
   [">洞察</a>", ">Insights</a>"],
   ["洞察中心", "Insights Center"],

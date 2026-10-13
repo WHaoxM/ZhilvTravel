@@ -1,0 +1,92 @@
+name: Build and deploy website
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and validate
+        run: |
+          npm run build
+          npm run validate
+      - name: Package the validated output
+        run: |
+          printf '{"sha":"%s"}\n' "$GITHUB_SHA" > dist/release.json
+          tar -C dist -czf site.tar.gz .
+          sha256sum site.tar.gz | cut -d ' ' -f 1 > site.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ github.sha }}
+          path: |
+            site.tar.gz
+            site.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: wenshu-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-${{ github.sha }}
+      - name: Check archive and configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.WENSHU_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.WENSHU_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          echo "$(cat site.sha256)  site.tar.gz" | sha256sum -c -
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_KNOWN_HOSTS"
+          umask 077
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+      - name: Publish this commit if it is still main
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          latest=$(curl -fsSL --retry 2 --max-time 15 \
+            -H 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/WHaoxM/ZhilvTravel/commits/main | jq -r .sha)
+          if [ "$latest" != "$RELEASE_SHA" ]; then
+            echo "Skipping superseded commit $RELEASE_SHA; main is $latest"
+            exit 0
+          fi
+          result=$(ssh -i "$HOME/.ssh/id_ed25519" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            wenshu-deploy@101.200.34.104 \
+            "deploy $RELEASE_SHA $(cat site.sha256)" < site.tar.gz)
+          printf '%s\n' "$result"
+          if printf '%s\n' "$result" | grep -q 'SKIPPED_STALE'; then
+            exit 0
+          fi
+          printf '%s\n' "$result" | grep -Eq 'DEPLOYED|ALREADY_CURRENT'
+          for path in / /en/ /pages/product-wenxiaolv.html /assets/js/wenshu-contact.js; do
+            curl -fsS --retry 3 --retry-delay 1 --max-time 15 \
+              -o /dev/null "https://www.zhilvtravel.com$path"
+          done
+          curl -fsS --retry 3 --retry-delay 1 --max-time 15 \
+            https://www.zhilvtravel.com/release.json |
+            jq -e --arg sha "$RELEASE_SHA" '.sha == $sha'
