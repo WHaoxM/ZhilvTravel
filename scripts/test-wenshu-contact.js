@@ -121,8 +121,9 @@ test('generated forms have address and real messaging script in all languages', 
         assert(html.includes('请输入电话号码（含国家区号）'), file);
       }
     }
-    if (file.startsWith('en/')) assert(html.includes('your message will be shared with the xuntingtravel team'), file);
-    else assert(html.includes('留言会同步给 xuntingtravel 团队'), file);
+    if (file.startsWith('en/')) assert(html.includes("Leave your question and contact details, and we'll get back to you soon."), file);
+    else assert(html.includes('请留下问题和联系方式，我们会尽快与您联系。'), file);
+    assert(!html.includes('xuntingtravel 团队') && !html.includes('the xuntingtravel team'), file);
     assert(!html.includes('感谢您的关注，Our support team'), file);
     assert(!html.includes('function sendChat()'), file);
   }

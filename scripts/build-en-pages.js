@@ -75,6 +75,7 @@ function loadSharedPatches() {
     ["匹配案例促成交", "Match relevant examples"],
     ["把已确认的需求与可用方案、相关案例连接，交给顾问继续跟进。", "Connect confirmed needs with available itineraries and examples for the advisor to follow up."],
     ["文数智旅为你<br>接住全球客源", "Wenshu Travel Connects You<br>with Travelers Worldwide"],
+    ["入境游的咨询发生在全球每一个时区，而人工客服的在线时长注定无法覆盖——这正是文小旅要解决的问题：", "Inbound inquiries arrive across time zones. Wenxiaolv helps you respond even when your team is offline:"],
     ["从全球获客到落地接待，连接每一段真实旅程", "From global discovery to on-the-ground service, connected at every step"],
     [">洞察</a>", ">Insights</a>"],
     ["浏览文数智旅", "Browse Wenshu Travel"],
@@ -127,7 +128,7 @@ function loadSharedPatches() {
      ["您好，请留下您的问题。客服回复后会显示在这里。", "Hello. Leave your question here and a staff reply will appear in this window."],
      ["请输入电话号码", "Enter your phone number"],
      ["电话联系", "Call us"],
-     ["文数智旅人工客服 · 消息由 xuntingtravel 团队回复", "Wenshu Travel support · Replies from the xuntingtravel team"],
+     ["文数智旅客服 · 我们会尽快回复", "Wenshu Travel support · We'll reply as soon as possible"],
      ["静音提示音", "Mute notification sound"],
      ["打开提示音", "Unmute notification sound"],
      ["暂时无法连接客服", "Support is temporarily unavailable"],
@@ -143,8 +144,7 @@ function loadSharedPatches() {
      ["继续对话", "Continue chat"],
      ["在线留言", "Leave a message"],
      ["请您留言", "Leave a message"],
-     ["感谢您的关注，Our support team is currently offline，请填写一下您的信息，留言会同步给 xuntingtravel 团队，我们会尽快和您联系。", "Thank you for reaching out. Our support team is currently offline; leave your details and your message will be shared with the xuntingtravel team. We will contact you shortly."],
-     ["感谢您的关注，当前客服人员不在线，请填写一下您的信息，留言会同步给 xuntingtravel 团队，我们会尽快和您联系。", "Thank you for reaching out. Our support team is currently offline; leave your details and your message will be shared with the xuntingtravel team. We will contact you shortly."],
+     ["客服暂时不在线，请留下问题和联系方式，我们会尽快与您联系。", "Our support team is currently offline. Leave your question and contact details, and we'll get back to you soon."],
      ["请在此输入留言内容，我们会尽快与您联系。（必填）", "Enter your message and we will contact you shortly. (Required)"],
      ["电话（必填）", "Phone (required)"],
      ["公司地址（必填）", "Company address (required)"],
@@ -441,7 +441,7 @@ function translatePage(html, zhFile) {
   for (const [zh, en] of DICT_ENTRIES) {
     if (zh.startsWith("ATTR:")) {
       const attr = zh.slice(5);
-      if (out.includes(attr)) { out = out.split(attr).join(en.slice(5)); hit++; }
+      if (out.includes(attr)) { out = out.split(attr).join(en.startsWith("ATTR:") ? en.slice(5) : en); hit++; }
     } else if (out.includes(zh)) {
       out = out.split(zh).join(en); hit++;
     }
@@ -555,6 +555,7 @@ function translatePage(html, zhFile) {
   }
 
   out = replaceInsightEnglish(out, zhFile);
+  out = out.replace(/(<title>[^<]*)文数智旅([^<]*<\/title>)/g, '$1Wenshu Travel$2');
   out = out
     .replace(/title="入境游(?:洞察|Insights)、(?:活动沙龙|Events)与百科"/g, 'title="Inbound tourism insights, events and glossary"')
     .replace(/Insights中心/g, 'Insights Center')

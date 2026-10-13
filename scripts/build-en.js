@@ -92,6 +92,12 @@ const POLICY_TRANSLATIONS = [
 ];
 for (const [zh, en] of POLICY_TRANSLATIONS.sort((a, b) => b[0].length - a[0].length)) out = out.split(zh).join(en);
 
+/* Translate the full support message before the generic “联系方式” replacement. */
+out = out.replace(
+  "客服暂时不在线，请留下问题和联系方式，我们会尽快与您联系。",
+  "Our support team is currently offline. Leave your question and contact details, and we'll get back to you soon."
+);
+
 /* ---------- 3. 文案替换（按出现顺序，精确匹配中文片段） ---------- */
 const T = [
   /* ===== S2 AI 接待截图（先于通用短串翻译，避免 aria/alt 被部分替换） ===== */
@@ -420,7 +426,6 @@ const T = [
   ["文旅资源库", "Travel resources"],
   ["订单履约", "Order fulfillment"],
   ["经营看板", "Operating dashboard"],
-  ["平台连接范围以项目方案与授权接口为准", "Platform coverage depends on the project scope and authorized integrations"],
   ["文数智旅业务生态连接图", "Wenshu Travel ecosystem map"],
   ["alt=\"文数智旅\"", "alt=\"Wenshu Travel\""],
   ["一套系统贯通增长全链路", "One system across the growth journey"],
@@ -529,7 +534,7 @@ const T = [
   ["您好，请留下您的问题。客服回复后会显示在这里。", "Hello. Leave your question here and a staff reply will appear in this window."],
   ["请输入电话号码", "Enter your phone number"],
   ["电话联系", "Call us"],
-  ["文数智旅人工客服 · 消息由 xuntingtravel 团队回复", "Wenshu Travel support · Replies from the xuntingtravel team"],
+  ["文数智旅客服 · 我们会尽快回复", "Wenshu Travel support · We'll reply as soon as possible"],
   ["静音提示音", "Mute notification sound"],
   ["打开提示音", "Unmute notification sound"],
   ["暂时无法连接客服", "Support is temporarily unavailable"],
@@ -546,8 +551,7 @@ const T = [
   ["本次沟通已结束", "Conversation ended"],
   ["当前客服人员不在线", "Our support team is currently offline"],
   ["请您留言", "Leave a message"],
-  ["感谢您的关注，Our support team is currently offline，请填写一下您的信息，留言会同步给 xuntingtravel 团队，我们会尽快和您联系。", "Thank you for reaching out. Our support team is currently offline; leave your details and your message will be shared with the xuntingtravel team. We will contact you shortly."],
-  ["感谢您的关注，当前客服人员不在线，请填写一下您的信息，留言会同步给 xuntingtravel 团队，我们会尽快和您联系。", "Thank you for reaching out. Our support team is currently offline; leave your details and your message will be shared with the xuntingtravel team. We will contact you shortly."],
+  ["客服暂时不在线，请留下问题和联系方式，我们会尽快与您联系。", "Our support team is currently offline. Leave your question and contact details, and we'll get back to you soon."],
   ["请在此输入留言内容，我们会尽快与您联系。（必填）", "Enter your message and we will contact you shortly. (Required)"],
   ["电话（必填）", "Phone (required)"],
   ["公司地址（必填）", "Company address (required)"],
@@ -594,13 +598,17 @@ const nmMappingStart = T.findIndex((entry, index) =>
 const nmMappingEnd = T.findIndex((entry, index) =>
   index > nmMappingStart && entry[0] === "经营数据"
 );
-if (nmMappingStart < 0 || nmMappingEnd < nmMappingStart) {
+const ecosystemMappingStart = T.findIndex((entry, index) =>
+  index > nmMappingStart && entry[0] === "Connected Ecosystem"
+);
+if (nmMappingStart < 0 || nmMappingEnd < nmMappingStart || ecosystemMappingStart < nmMappingStart || ecosystemMappingStart > nmMappingEnd) {
   throw new Error("Unable to locate the migrated-section translation range.");
 }
 
-function replaceInNavosMigration(zh, en) {
-  const start = out.indexOf('<section class="nm-section nm-dark nm-why"');
-  const end = out.indexOf('<!-- ================= S8', start);
+function replaceInNavosMigration(zh, en, index) {
+  const ecosystem = index >= ecosystemMappingStart && index <= nmMappingEnd;
+  const start = out.indexOf(ecosystem ? '<section class="nm-section nm-ecosystem"' : '<section class="nm-section nm-dark nm-why"');
+  const end = out.indexOf(ecosystem ? '<!-- ================= S2' : '<!-- ================= S8', start);
   if (start < 0 || end < 0) return false;
 
   const block = out.slice(start, end);
@@ -613,7 +621,7 @@ for (let index = 0; index < T.length; index++) {
   const [zh, en] = T[index];
   const scopedToMigration = index >= nmMappingStart && index <= nmMappingEnd;
   const matched = scopedToMigration
-    ? replaceInNavosMigration(zh, en)
+    ? replaceInNavosMigration(zh, en, index)
     : out.includes(zh);
 
   if (matched) {
@@ -655,7 +663,6 @@ for (const [zh, en] of JS_T) {
 const T2 = [
   /* ===== 客服组件二次修补（避免短词先替换造成中英混排） ===== */
   ["Customer Support · 在线接待", "Human support · Online"],
-  ["文数智旅Customer Support · 消息由 xuntingtravel 团队回复", "Wenshu Travel support · Replies from the xuntingtravel team"],
   ["感谢您的关注，Our support team is currently offline，请填写一下您的信息，我们会尽快和您联系。", "Thank you for reaching out. Our support team is currently offline; please leave your details and we will contact you shortly."],
   ["Company address（必填）", "Company address (required)"],
   ["最小化", "Minimize"],
@@ -932,6 +939,11 @@ for (const [zh, en] of JS_T2) {
    「需求定调」先于 QA 长串），这里把半成品形态一次性归位。 */
 const PATCH = [
   /* 半成品 HTML */
+  ['<a class="mobile-nav-link" href="index.html">首页<span>', '<a class="mobile-nav-link" href="index.html">Home<span>'],
+  ['<a class="mobile-nav-link" href="pages/cases.en.html">客户案例<span>', '<a class="mobile-nav-link" href="pages/cases.en.html">Case Studies<span>'],
+  ['7×24 多语种值守、Smart Intent Mining、自动打标分级、一键转人工——回复又快又准',
+   '24/7 multilingual coverage, intent mining, auto-tagging and one-click human handoff'],
+  ['<div class="prop-label">客户画像</div>', '<div class="prop-label">Customer profiles</div>'],
   ['data-title="咨询Custom Solutions"', 'data-title="Custom Solutions Inquiry"'],
   ['<div class="group-title">解决方案</div>', '<div class="group-title">Solutions</div>'],
   ['aria-label="Products演示切换"', 'aria-label="Product feature switcher"'],
@@ -939,6 +951,11 @@ const PATCH = [
   ['alt="AI Service Workspace多语种协同实景"', 'alt="Multilingual AI service workspace"'],
   ['alt="旅游方案Automatic Costing工作台实景"', 'alt="Automated itinerary costing workspace"'],
   ['alt="入境游End-to-End Order Control工作台实景"', 'alt="End-to-end inbound order operations workspace"'],
+  ['aria-label="Private-Traffic Capture素材"', 'aria-label="Private lead-capture media"'],
+  ['aria-label="SEO / SEM Capture素材"', 'aria-label="SEO and SEM media"'],
+  ['alt="高播放量旅行短视频网格截图（Social Content Seeding）"', 'alt="Grid of high-view travel videos"'],
+  ['alt="旅行创作者主页与置顶内容截图（Social Content Seeding）"', 'alt="Travel creator profile with pinned posts"'],
+  ['alt="旅行创作者主页与置顶短视频截图（Social Content Seeding）"', 'alt="Travel creator profile with pinned videos"'],
   ['7×24 多语种值守、智能Intent Mining、自动打标分级、一键转人工——回复又快又准',
    '24/7 multilingual coverage, intent mining, auto-tagging, one-click human handoff — fast and accurate'],
   ['<div class="ci-title">智能Intent Mining</div>', '<div class="ci-title">Smart Intent Mining</div>'],

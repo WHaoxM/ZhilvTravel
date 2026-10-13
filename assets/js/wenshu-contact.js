@@ -83,7 +83,7 @@
       var date = m && m.created_at ? new Date(m.created_at) : new Date();
       var time = Number.isNaN(date.getTime()) ? '' : date.toLocaleTimeString(en ? 'en-US' : 'zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
       var label = document.createElement('div'); label.className = 'cp-agent-label';
-      label.textContent = text('xuntingtravel 客服' + (time ? '  今天 ' + time : ''), 'xuntingtravel support' + (time ? '  Today ' + time : ''));
+      label.textContent = text('文数智旅客服' + (time ? '  今天 ' + time : ''), 'Wenshu Travel support' + (time ? '  Today ' + time : ''));
       body.appendChild(label);
     }
     function playNotify() {
