@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${SSH_ORIGINAL_COMMAND:-}" =~ ^deploy[[:space:]]([0-9a-f]{40})[[:space:]]([0-9a-f]{64})$ ]]; then
+  exec sudo -n /usr/local/sbin/wenshu-release deploy "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+fi
+
+echo 'Only a signed release upload is accepted.' >&2
+exit 64

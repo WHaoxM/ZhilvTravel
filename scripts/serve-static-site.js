@@ -5,6 +5,7 @@ const { URL } = require("node:url");
 
 const root = path.resolve(__dirname, "..", "dist");
 const port = Number(process.env.PORT || 4173);
+const host = process.env.HOST || "127.0.0.1";
 
 const types = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -35,12 +36,15 @@ const server = http.createServer((request, response) => {
     response.end("Not found");
     return;
   }
-  response.writeHead(200, { "content-type": types.get(path.extname(target).toLowerCase()) || "application/octet-stream" });
+  response.writeHead(200, {
+    "content-type": types.get(path.extname(target).toLowerCase()) || "application/octet-stream",
+    "cache-control": "no-store",
+  });
   fs.createReadStream(target).pipe(response);
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`Local: http://127.0.0.1:${port}/`);
+server.listen(port, host, () => {
+  console.log(`Local: http://${host}:${port}/`);
 });
 
 function isInside(parent, child) {

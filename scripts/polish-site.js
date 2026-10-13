@@ -3,7 +3,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const siteOrigin =
-  (process.env.SITE_ORIGIN || "https://wenshuzhilv.kaifa2-xtch2026.chatgpt.site").replace(/\/+$/, "");
+  (process.env.SITE_ORIGIN || "https://www.zhilvtravel.com").replace(/\/+$/, "");
 
 const htmlFiles = [
   path.join(root, "index.html"),

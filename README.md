@@ -13,7 +13,7 @@ npm run build
 npm run validate
 ```
 
-`dist/` 是可直接上传的静态站点目录，含中文首页、英文首页、子页、图片、封面与三支正式 MP4。将 `dist/` 作为静态站点根目录部署即可。若用 Sites 更新原站点，保留 `.openai/hosting.json` 中的项目 ID，并通过有权限的 Sites 发布流程提交本仓库的同一来源版本；仅推送 GitHub **不会自动更新线上站点**。
+`dist/` 是可直接上传的静态站点目录，含中文首页、英文首页、子页、图片、封面与三支正式 MP4。将 `dist/` 作为静态站点根目录部署即可。`main` 的推送由 GitHub Actions 构建、验证并自动发布到 `www.zhilvtravel.com`；PR 只运行验证，不接触生产密钥。服务器发布与回滚操作见 [`ops/README.md`](ops/README.md)。若另行使用 Sites，保留 `.openai/hosting.json` 中的项目 ID，但 Sites 不是该域名的发布入口。
 
 `npm run validate` 不需要安装额外依赖。`test:home-responsive`、`test:social` 等浏览器回归脚本是可选开发测试，运行时还需可用的 Playwright 和 Chromium；相应媒体清单保存在 `assets/generated/*/manifest.json`，不会进入部署目录。
 

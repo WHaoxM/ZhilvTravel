@@ -29,6 +29,7 @@ function loadSharedPatches() {
     ["<span>解决方案</span>", "<span>Solutions</span>"],
     ["<span>关于我们</span>", "<span>About</span>"],
     [">首页</a>", ">Home</a>"],
+    [">登录<", ">Log in<"],
     [">客户案例</a>", ">Case Studies</a>"],
     ["真实游客出行场景", "Real traveler scene"],
     ["在新标签页查看完整图片", "Open the full image in a new tab"],

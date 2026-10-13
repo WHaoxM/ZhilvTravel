@@ -191,7 +191,9 @@
     }
     function openChat() {
       panel.classList.add('open'); fab.setAttribute('aria-expanded', 'true'); fab.setAttribute('aria-label', text('关闭在线咨询', 'Close support chat')); fab.style.display = 'none';
-      if (input && input.focus) setTimeout(function () { input.focus(); }, 0);
+      // On phones, focusing the composer immediately opens the keyboard and shrinks the dialog.
+      var initialFocus = window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? document.getElementById('chatClose') : input;
+      if (initialFocus && initialFocus.focus) setTimeout(function () { initialFocus.focus(); }, 0);
       if (ended || !conversation) connect(); else poll();
     }
     fab.addEventListener('click', openChat);

@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+BASE=/opt/wenshu-site
+RELEASES="$BASE/releases"
+CURRENT="$BASE/current"
+ARTIFACTS="$BASE/artifacts"
+LOG="$BASE/deployments.log"
+HOST=www.zhilvtravel.com
+API=https://api.github.com/repos/WHaoxM/ZhilvTravel/commits/main
+
+exec 9>/run/lock/wenshu-release.lock
+flock -x 9
+umask 022
+
+archive=''
+incoming=''
+next_link=''
+cleanup() {
+  [[ -z "$archive" || ! -e "$archive" ]] || rm -f -- "$archive"
+  [[ -z "$incoming" || ! -d "$incoming" ]] || rm -rf -- "$incoming"
+  [[ -z "$next_link" || ! -L "$next_link" ]] || rm -f -- "$next_link"
+}
+trap cleanup EXIT
+
+log() {
+  printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$LOG"
+}
+
+switch_to() {
+  local target=$1
+  next_link="$BASE/.current.next.$$"
+  test ! -e "$next_link" && test ! -L "$next_link"
+  ln -s "$target" "$next_link"
+  mv -Tf "$next_link" "$CURRENT"
+  next_link=''
+}
+
+public_get() {
+  curl --noproxy '*' --resolve "$HOST:443:127.0.0.1" \
+    -fsS --max-time 8 "https://$HOST$1"
+}
+
+healthy_release() {
+  local expected=$1 got
+  for _ in 1 2 3 4 5; do
+    got=$(public_get /release.json 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin).get("sha", ""))' 2>/dev/null) || got=''
+    if [[ "$got" == "$expected" ]] && \
+       public_get / >/dev/null 2>&1 && \
+       public_get /en/ >/dev/null 2>&1 && \
+       public_get /pages/product-wenxiaolv.html >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
+}
+
+case "${1:-}" in
+  deploy)
+    sha=${2:-}
+    digest=${3:-}
+    [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid commit SHA' >&2; exit 64; }
+    [[ "$digest" =~ ^[0-9a-f]{64}$ ]] || { echo 'Invalid archive SHA-256' >&2; exit 64; }
+    [[ $# -eq 3 ]] || exit 64
+    mkdir -p "$ARTIFACTS" "$RELEASES"
+    archive=$(mktemp "$ARTIFACTS/.incoming.XXXXXX")
+    chmod 600 "$archive"
+    ulimit -f 307200
+    cat > "$archive"
+    actual=$(sha256sum "$archive" | cut -d ' ' -f 1)
+    [[ "$actual" == "$digest" ]] || { log "REJECTED checksum $sha"; exit 1; }
+    python3 - "$archive" <<'PY'
+import pathlib, sys, tarfile
+with tarfile.open(sys.argv[1], 'r:gz') as tf:
+    for member in tf:
+        p = pathlib.PurePosixPath(member.name)
+        if p.is_absolute() or '..' in p.parts or not (member.isfile() or member.isdir()):
+            raise SystemExit('Unsafe archive entry: ' + member.name)
+PY
+    incoming=$(mktemp -d "$RELEASES/.incoming.$sha.XXXXXX")
+    tar --no-same-owner --no-same-permissions -xzf "$archive" -C "$incoming"
+    test -s "$incoming/index.html"
+    test -s "$incoming/en/index.html"
+    test -s "$incoming/pages/product-wenxiaolv.html"
+    found=$(python3 - "$incoming/release.json" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding='utf-8') as f:
+    print(json.load(f).get('sha', ''))
+PY
+)
+    [[ "$found" == "$sha" ]] || { log "REJECTED manifest $sha"; exit 1; }
+    latest=$(curl --noproxy '*' -fsSL --retry 2 --max-time 15 \
+      -H 'Accept: application/vnd.github+json' "$API" |
+      python3 -c 'import json,sys; print(json.load(sys.stdin)["sha"])')
+    if [[ "$latest" != "$sha" ]]; then
+      log "SKIPPED_STALE $sha main=$latest"
+      exit 0
+    fi
+    previous=$(readlink "$CURRENT")
+    if [[ "$previous" == "releases/$sha" ]]; then
+      log "ALREADY_CURRENT $sha"
+      exit 0
+    fi
+    if [[ ! -d "$RELEASES/$sha" ]]; then
+      mv -T "$incoming" "$RELEASES/$sha"
+      incoming=''
+    fi
+    switch_to "releases/$sha"
+    if healthy_release "$sha"; then
+      log "DEPLOYED $sha previous=$previous artifact_sha256=$digest"
+      exit 0
+    fi
+    switch_to "$previous"
+    public_get / >/dev/null 2>&1 || true
+    log "ROLLED_BACK $sha restored=$previous health_check_failed"
+    exit 1
+    ;;
+  rollback)
+    name=${2:-}
+    [[ $# -eq 2 && "$name" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]{0,100}$ ]] || exit 64
+    test -s "$RELEASES/$name/index.html"
+    previous=$(readlink "$CURRENT")
+    switch_to "releases/$name"
+    if public_get / >/dev/null 2>&1; then
+      log "MANUAL_ROLLBACK target=$name previous=$previous"
+      exit 0
+    fi
+    switch_to "$previous"
+    log "ROLLBACK_FAILED target=$name restored=$previous"
+    exit 1
+    ;;
+  *)
+    echo 'Usage: wenshu-release deploy SHA SHA256 < archive | rollback RELEASE_DIR' >&2
+    exit 64
+    ;;
+esac
