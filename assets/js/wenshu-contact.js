@@ -37,6 +37,20 @@
   function initChat() {
     var panel = document.getElementById('chatPanel'), fab = document.getElementById('chatFab');
     if (!panel || !fab) return;
+    var backdrop = document.createElement('div');
+    backdrop.className = 'chat-backdrop'; backdrop.setAttribute('aria-hidden', 'true');
+    panel.parentNode.insertBefore(backdrop, panel);
+    function syncChatViewport() {
+      if (!window.visualViewport) return;
+      var view = window.visualViewport;
+      panel.style.setProperty('--chat-visible-height', Math.round(view.height) + 'px');
+      panel.style.setProperty('--chat-keyboard-inset', Math.max(0, Math.round(window.innerHeight - view.offsetTop - view.height)) + 'px');
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', syncChatViewport);
+      window.visualViewport.addEventListener('scroll', syncChatViewport);
+      window.addEventListener('resize', syncChatViewport);
+    }
     var body = document.getElementById('chatBody'), input = document.getElementById('chatInput'), phoneInput = document.getElementById('chatPhone');
     var send = document.getElementById('chatSend'), status = document.getElementById('chatStatus') || panel.querySelector('.cp-head div span') || panel.querySelector('.cp-head span:not(.cp-avatar)');
     var chips = document.getElementById('chatChips');
@@ -190,18 +204,26 @@
       if (fabTitle) fabTitle.textContent = mode === 'resume' ? text('继续咨询', 'Resume chat') : text('在线咨询', 'Online support');
     }
     function openChat() {
-      panel.classList.add('open'); fab.setAttribute('aria-expanded', 'true'); fab.setAttribute('aria-label', text('关闭在线咨询', 'Close support chat')); fab.style.display = 'none';
+      syncChatViewport(); panel.classList.add('open'); backdrop.classList.add('open'); document.body.classList.add('chat-is-open');
+      fab.setAttribute('aria-expanded', 'true'); fab.setAttribute('aria-label', text('关闭在线咨询', 'Close support chat')); fab.style.display = 'none';
       // On phones, focusing the composer immediately opens the keyboard and shrinks the dialog.
       var initialFocus = window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? document.getElementById('chatClose') : input;
       if (initialFocus && initialFocus.focus) setTimeout(function () { initialFocus.focus(); }, 0);
       if (ended || !conversation) connect(); else poll();
     }
     fab.addEventListener('click', openChat);
-    function closePanel(mode) { panel.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-label', text('打开在线咨询', 'Open support chat')); setFabMode(mode === 'minimize' ? 'resume' : 'chat'); fab.style.display = ''; clearTimeout(timer); if (fab.focus) fab.focus(); }
+    function closePanel(mode) { panel.classList.remove('open', 'composing', 'phone-entry'); backdrop.classList.remove('open'); document.body.classList.remove('chat-is-open'); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-label', text('打开在线咨询', 'Open support chat')); setFabMode(mode === 'minimize' ? 'resume' : 'chat'); fab.style.display = ''; clearTimeout(timer); if (fab.focus) fab.focus(); }
+    backdrop.addEventListener('click', function () { closePanel('minimize'); });
     var min = document.getElementById('chatMin'); if (min) min.addEventListener('click', function () { closePanel('minimize'); });
     var close = document.getElementById('chatClose');
     if (close) close.addEventListener('click', function () { closePanel('close'); });
     send.addEventListener('click', sendMessage);
+    input.addEventListener('focus', function () { panel.classList.add('composing'); });
+    input.addEventListener('blur', function () { panel.classList.remove('composing'); });
+    if (phoneInput) {
+      phoneInput.addEventListener('focus', function () { panel.classList.add('phone-entry'); });
+      phoneInput.addEventListener('blur', function () { panel.classList.remove('phone-entry'); });
+    }
     input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); sendMessage(); } });
     if (chips && chips.querySelectorAll) Array.prototype.forEach.call(chips.querySelectorAll('.cp-chip'), function (chip) {
       chip.addEventListener('click', function () { input.value = chip.getAttribute('data-q') || chip.textContent.trim(); input.focus(); sendMessage(); });
@@ -235,7 +257,7 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Tab' && panel.classList.contains('open') && panel.querySelectorAll) {
         var focusables = Array.prototype.filter.call(panel.querySelectorAll('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href]'), function (el) {
-          return !el.hidden && !(el.closest && el.closest('[hidden]'));
+          return !el.hidden && !(el.closest && el.closest('[hidden]')) && el.getClientRects().length > 0 && window.getComputedStyle(el).visibility !== 'hidden';
         });
         if (focusables.length) {
           var first = focusables[0], last = focusables[focusables.length - 1];

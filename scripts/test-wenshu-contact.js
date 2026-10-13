@@ -34,11 +34,12 @@ test('closed chat opens the offline lead without reopening IM', async () => {
     'chatToolHint', 'chatSpeaker', 'chatContinue', 'chatLeave', 'chatLeaveMask', 'chatLeaveClose', 'chatLeaveForm',
     'leaveMessage', 'leaveName', 'leavePhone', 'leaveEmail', 'leaveAddress', 'chatLeaveFeedback'];
   const nodes = Object.fromEntries(ids.map(id => [id, element()]));
+  nodes.chatPanel.parentNode = { insertBefore() {} };
   const status = element(), welcome = element(), submit = element();
   nodes.chatPanel.querySelector = selector => selector === '.cp-welcome' ? welcome : selector === '.cp-head div span' ? status : selector === 'button[type="submit"]' ? submit : element();
   nodes.chatPanel.querySelectorAll = () => [];
   nodes.chatLeaveForm.querySelector = () => submit;
-  const document = { documentElement: { lang: 'zh' }, hidden: false,
+  const document = { documentElement: { lang: 'zh' }, body: element(), hidden: false,
     getElementById: id => nodes[id], createElement: element, addEventListener() {} };
   const window = { WENSHU_LEAD_CONFIG: { endpoint: 'https://www.xuntingtravel.com/api/wenshu' } };
   const token = 'ws_' + 'b'.repeat(64), actions = [];
@@ -144,8 +145,9 @@ test('human chat connects, renders staff reply as text and sends visitor message
       appendChild(el) { this.children.push(el); }, replaceChildren() { this.children = []; }, setAttribute() {} };
   }
   const nodes = Object.fromEntries(['chatPanel', 'chatFab', 'chatBody', 'chatInput', 'chatSend', 'chatClose', 'chatChips'].map(id => [id, element()]));
+  nodes.chatPanel.parentNode = { insertBefore() {} };
   nodes.chatPanel.querySelector = () => element();
-  const document = { documentElement: { lang: 'zh' }, hidden: false,
+  const document = { documentElement: { lang: 'zh' }, body: element(), hidden: false,
     getElementById: id => nodes[id], createElement: element, addEventListener() {} };
   const window = { WENSHU_LEAD_CONFIG: { endpoint: 'https://www.xuntingtravel.com/api/wenshu' } };
   const token = 'ws_' + 'a'.repeat(64), sent = [];
