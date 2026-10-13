@@ -49,31 +49,4 @@
     });
   });
 
-  document.querySelectorAll("[data-proof-track]").forEach(function (track) {
-    if (track.dataset.enhanced === "true") return;
-    track.dataset.enhanced = "true";
-
-    Array.prototype.slice.call(track.children).forEach(function (card) {
-      var clone = card.cloneNode(true);
-      clone.dataset.clone = "true";
-      clone.setAttribute("aria-hidden", "true");
-      clone.querySelectorAll("[id]").forEach(function (node) {
-        node.removeAttribute("id");
-      });
-      track.appendChild(clone);
-    });
-  });
-
-  var proofToggle = document.querySelector("[data-proof-toggle]");
-  var proofStage = document.getElementById("nm-proof-stage");
-  if (proofToggle && proofStage) {
-    proofToggle.addEventListener("click", function () {
-      var paused = !proofStage.classList.contains("is-paused");
-      proofStage.classList.toggle("is-paused", paused);
-      proofToggle.setAttribute("aria-pressed", paused ? "true" : "false");
-      proofToggle.textContent = paused
-        ? proofToggle.dataset.playLabel
-        : proofToggle.dataset.pauseLabel;
-    });
-  }
 })();

@@ -129,7 +129,7 @@ async function main() {
     if (report.failures.length > 12) console.error(`- ... ${report.failures.length - 12} more (see JSON)`);
     process.exitCode = 1;
   } else {
-    console.log("PASS: no horizontal overflow, responsive hero geometry, adaptive media fit, and tab interactions");
+    console.log("PASS: no horizontal overflow, responsive hero geometry, adaptive media fit, tab interactions, and scrolled mobile drawer");
   }
 }
 
@@ -226,6 +226,7 @@ async function runCase({ browser, route, width, dpr, report }) {
     }
 
     result.tabInteraction = await checkTabs(page, report, result);
+    if (width <= 860) result.mobileNav = await checkMobileNavAfterScroll(page, report, result);
   } catch (error) {
     fail(report, result, "case-error", error && error.message ? error.message : String(error));
   } finally {
@@ -529,6 +530,23 @@ async function checkTabs(page, report, result) {
   return summary;
 }
 
+async function checkMobileNavAfterScroll(page, report, result) {
+  await page.evaluate(() => window.scrollTo(0, 650));
+  await page.waitForFunction(() => window.scrollY > 24 && document.querySelector("#nav").classList.contains("scrolled"));
+  await page.locator("#mobileMenuToggle").click();
+  const state = await page.evaluate(() => {
+    const header = document.querySelector("#nav").getBoundingClientRect();
+    const drawer = document.querySelector("#mobileNav").getBoundingClientRect();
+    const panel = document.querySelector(".mobile-nav-inner").getBoundingClientRect();
+    return { viewportHeight: innerHeight, headerBottom: header.bottom, drawerTop: drawer.top, drawerBottom: drawer.bottom, drawerHeight: drawer.height, panelHeight: panel.height };
+  });
+  if (Math.abs(state.drawerTop - state.headerBottom) > 2 || state.drawerBottom < state.viewportHeight - 2 || state.panelHeight < state.viewportHeight - state.headerBottom - 2) {
+    fail(report, result, "mobile-nav-clipped-after-scroll", "mobile drawer must cover the viewport below the sticky header", state);
+  }
+  await page.locator("#mobileNavClose").click();
+  return state;
+}
+
 function fail(report, result, code, message, details = undefined) {
   result.status = "failed";
   const failure = {
@@ -679,4 +697,3 @@ function stopChild(child) {
 function round(value) {
   return Number(Number(value).toFixed(3));
 }
-

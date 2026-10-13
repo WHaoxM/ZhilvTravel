@@ -21,7 +21,7 @@ function classList() {
 function video(src) {
   return {
     dataset: {src}, duration: NaN, currentTime: 0,
-    paused: true, loads: 0, plays: 0, reject: false,
+    paused: true, ended: false, loads: 0, plays: 0, reject: false, listeners: {},
     hasAttribute(name) { return name === 'src' && typeof this.src === 'string'; },
     removeAttribute(name) { if (name === 'src') delete this.src; },
     load() { this.loads++; },
@@ -33,7 +33,7 @@ function video(src) {
         if (this.reject) fn({name: 'NotAllowedError'});
       }};
     },
-    addEventListener(name, fn) { this[name] = fn; }
+    addEventListener(name, fn) { this.listeners[name] = fn; }
   };
 }
 
@@ -59,19 +59,6 @@ function harness(html, reduced = false, observer = true) {
       setProperty(name, value) { this.values[name] = value; }
     }
   };
-  const toggleLabel = {textContent: ''};
-  const engineToggle = {
-    dataset: {
-      paused: 'false',
-      pauseLabel: 'Pause demo',
-      playLabel: 'Play demo',
-      pauseText: 'Pause',
-      playText: 'Play'
-    },
-    attributes: {},
-    setAttribute(name, value) { this.attributes[name] = String(value); },
-    addEventListener(name, fn) { this[name] = fn; }
-  };
   const heroScreen = {};
   const screenTitle = {textContent: ''};
   const preference = {
@@ -92,12 +79,10 @@ function harness(html, reduced = false, observer = true) {
     $(selector, parent) {
       if (selector === 'video') return parent.video;
       if (selector === '.bar') return parent.bar;
-      if (selector === 'span' && parent === engineToggle) return toggleLabel;
       if (selector === '.hero-screen') return heroScreen;
       if (selector === '#screenTitle') return screenTitle;
       if (selector === '[data-engine-demo]') return engineDemo;
       if (selector === '[data-engine-video]') return engineVideo;
-      if (selector === '#engineVideoToggle') return engineToggle;
       return {};
     },
     $$(selector, parent) {
@@ -130,7 +115,6 @@ function harness(html, reduced = false, observer = true) {
     document,
     engineDemo,
     engineSteps,
-    engineToggle,
     engineVideo,
     heroScreen,
     heroVideos,
@@ -170,10 +154,12 @@ for (const route of ['index.html', 'en/index.html']) {
   assert(!/(?:^|\s)(?:src|autoplay)\s*=?/.test(engineTag), `${route}: engine video must have no initial src/autoplay`);
   for (const required of [
     'data-src=', 'poster=', 'width="1254"', 'height="720"',
-    'muted', 'loop', 'playsinline', 'preload="metadata"'
+    'muted', 'playsinline', 'preload="metadata"'
   ]) {
     assert(engineTag.includes(required), `${route}: engine video is missing ${required}`);
   }
+  assert(!/(?:^|\s)loop(?:\s|>|=)/.test(engineTag), `${route}: engine video must play once, not loop`);
+  assert(!/engineVideoToggle|data-proof-toggle|nm-proof-toggle|data-proof-track/.test(html), `${route}: marketing page must not expose pause controls or proof marquee hooks`);
   for (const [, ref] of engineTag.matchAll(/(?:data-src|poster)="([^"]+)"/g)) {
     assert(fs.existsSync(path.resolve(root, path.dirname(route), ref)), `${route}: missing ${ref}`);
   }
@@ -207,12 +193,16 @@ for (const route of ['index.html', 'en/index.html']) {
   h.document.hidden = false;
   h.document.visibilitychange();
   assert(!h.engineVideo.paused, `${route}: visible in-view engine may resume`);
-  h.engineToggle.click();
-  assert(h.engineVideo.paused, `${route}: explicit user pause wins over viewport visibility`);
-  assert.equal(h.engineToggle.dataset.paused, 'true', `${route}: pause control exposes its state`);
+  const playsBeforeEnd = h.engineVideo.plays;
+  h.engineVideo.duration = 5.04;
+  h.engineVideo.currentTime = 5.04;
+  h.engineVideo.ended = true;
+  h.engineVideo.paused = true;
+  h.engineVideo.listeners.ended();
+  assert.equal(h.engineDemo.style.values['--engine-progress'], '1.0000', `${route}: final step stays complete`);
   h.setEngineVisible(false);
   h.setEngineVisible(true);
-  assert(h.engineVideo.paused, `${route}: user pause persists across observer transitions`);
+  assert(h.engineVideo.paused && h.engineVideo.plays === playsBeforeEnd, `${route}: finished demo does not replay`);
 
   h.preference.matches = true;
   h.preference.change();
@@ -222,6 +212,11 @@ for (const route of ['index.html', 'en/index.html']) {
   h = harness(html, true);
   h.setEngineVisible(true);
   assert(h.engineVideo.paused && !h.engineVideo.hasAttribute('src'), `${route}: reduced motion prevents initial loading/playback`);
+
+  h = harness(html);
+  h.engineVideo.reject = true;
+  h.setEngineVisible(true);
+  assert(h.engineVideo.paused && !h.engineVideo.hasAttribute('src') && h.engineVideo.dataset.static === 'true', `${route}: blocked autoplay falls back to the poster`);
 
   h = harness(html);
   h.context.setPane(1);
@@ -256,8 +251,13 @@ for (const route of ['index.html', 'en/index.html']) {
   assert(h.heroVideos.every(item => !item.hasAttribute('src')));
   assert(!h.engineVideo.hasAttribute('src') && h.engineVideo.paused);
 
-  console.log(`PASS ${route}: hero + engine lazy lifecycle, controls, motion preference, fixed video ratio`);
+  console.log(`PASS ${route}: hero + one-shot engine lifecycle, no pause controls, motion preference, fixed video ratio`);
 }
+
+const proofCss = fs.readFileSync(path.join(root, 'assets/css/navos-section.css'), 'utf8');
+assert(!/nm-marquee|nm-proof-toggle/.test(proofCss), 'business scenario cards must not auto-scroll or expose pause controls');
+const proofScript = fs.readFileSync(path.join(root, 'assets/js/navos-section.js'), 'utf8');
+assert(!/data-proof-track|data-proof-toggle/.test(proofScript), 'business scenario cards must not be cloned or toggled');
 
 for (const dir of ['pages', 'en/pages']) {
   const files = fs.readdirSync(path.join(root, dir)).filter(file => file.endsWith('.html'));

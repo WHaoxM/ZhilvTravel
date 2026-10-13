@@ -219,19 +219,29 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .mobile-nav-inner{width:min(100%,520px);margin-left:auto;min-height:100%;background:var(--surface);box-shadow:-18px 0 48px rgba(11,16,41,.16);overflow-y:auto;padding:18px 20px 32px}
 .mobile-nav-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .mobile-nav-head strong{font-size:16px;color:var(--ink)}
-.mobile-nav-close{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:26px;line-height:1;cursor:pointer}
-.mobile-nav-close:hover,.mobile-nav-close:focus-visible{background:var(--bg-soft);color:var(--ink);outline:none}
-.mobile-nav-link,.mobile-nav-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:15px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;text-decoration:none;text-align:left;cursor:pointer}
-.mobile-nav-link:hover,.mobile-nav-link:focus-visible,.mobile-nav-summary:hover,.mobile-nav-summary:focus-visible{color:var(--primary);outline:none}
+.mobile-nav-close{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--bg-soft);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;transition:background var(--t-fast),color var(--t-fast),border-color var(--t-fast)}
+.mobile-nav-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.mobile-nav-close:hover,.mobile-nav-close:focus-visible{background:var(--primary-100);border-color:var(--primary);color:var(--primary)}
+.mobile-nav-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.mobile-nav-link,.mobile-nav-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:13px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;text-decoration:none;text-align:left;cursor:pointer}
+.mobile-nav-link:hover,.mobile-nav-link:focus-visible,.mobile-nav-summary:hover,.mobile-nav-summary:focus-visible{color:var(--primary)}
+.mobile-nav-link:focus-visible,.mobile-nav-summary:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;border-radius:8px}
 .mobile-nav-login{color:var(--primary);font-weight:700}
-.mobile-nav-summary::after{content:"＋";font-size:20px;font-weight:400;color:var(--muted);transition:transform var(--t-fast)}
-.mobile-nav-group[open]>.mobile-nav-summary::after{content:"－"}
+.mobile-nav-icon{width:36px;height:36px;flex:none;display:grid;place-items:center;border:1px solid rgba(0,97,255,.08);border-radius:12px;background:var(--bg-soft);color:var(--ink-2);transition:background var(--t-fast),color var(--t-fast),transform var(--t-fast)}
+.mobile-nav-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mobile-nav-link:hover .mobile-nav-icon,.mobile-nav-link:focus-visible .mobile-nav-icon,.mobile-nav-summary:hover .mobile-nav-icon,.mobile-nav-summary:focus-visible .mobile-nav-icon,.mobile-nav-login .mobile-nav-icon,.mobile-nav-group[open]>.mobile-nav-summary .mobile-nav-icon{background:var(--primary-100);color:var(--primary)}
+.mobile-nav-summary{list-style:none}
+.mobile-nav-summary::-webkit-details-marker{display:none}
+.mobile-nav-summary .mobile-nav-icon svg{transition:transform var(--t-fast)}
+.mobile-nav-group[open]>.mobile-nav-summary .mobile-nav-icon svg{transform:rotate(180deg)}
 .mobile-nav-group{border-bottom:1px solid var(--line)}
 .mobile-nav-group>.mobile-nav-summary{border-bottom:0}
 .mobile-nav-sub{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 0 14px}
 .mobile-nav-sub a{padding:10px 11px;border-radius:10px;background:var(--bg-soft);color:var(--ink-2);font-size:14px;line-height:1.35;text-decoration:none}
 .mobile-nav-sub a:hover,.mobile-nav-sub a:focus-visible{background:var(--primary-100);color:var(--primary);outline:none}
 .mobile-nav-cta{margin-top:18px;width:100%;justify-content:center}
+.mobile-nav-cta-icon{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.18)}
+.mobile-nav-cta-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ===== 知衣巨型下拉面板（1:1 复用） ===== */
 .nav-mega{position:relative}
@@ -1067,16 +1077,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .ew-brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--primary);color:#fff}
 .ew-brand-mark svg{width:17px;height:17px}
 .ew-toolbar-meta{display:flex;align-items:center;gap:14px;color:#c4d7f2}
-.ew-live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;letter-spacing:.03em}
-.ew-live::before{content:"";width:7px;height:7px;border-radius:50%;background:#48dfa0;box-shadow:0 0 0 4px rgba(72,223,160,.11);animation:engineLive 1.9s ease-in-out infinite}
+.ew-status{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;letter-spacing:.03em}
+.ew-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#48dfa0;box-shadow:0 0 0 4px rgba(72,223,160,.11)}
 .ew-scope{font-size:12px;color:#9fb5d4;letter-spacing:.03em}
-.ew-video-toggle{height:32px;display:inline-flex;align-items:center;gap:7px;padding:0 10px;border:1px solid rgba(190,219,255,.18);border-radius:9px;color:#dbeaff;background:rgba(255,255,255,.045);font-size:11.5px;font-weight:650}
-.ew-video-toggle:hover,.ew-video-toggle:focus-visible{color:#fff;border-color:rgba(112,190,255,.65);background:rgba(0,112,255,.13);outline:none}
-.ew-video-toggle:focus-visible{box-shadow:0 0 0 3px rgba(51,154,255,.22)}
-.ew-video-toggle svg{width:13px;height:13px}
-.ew-video-toggle .ew-toggle-play{display:none}
-.ew-video-toggle[data-paused="true"] .ew-toggle-pause{display:none}
-.ew-video-toggle[data-paused="true"] .ew-toggle-play{display:block}
 .ew-visual{position:relative;width:100%;aspect-ratio:1254/720;overflow:hidden;background:#dceafa}
 .ew-video{display:block;width:100%;height:100%;object-fit:cover;background:#dceafa}
 .ew-visual::before{
@@ -1109,12 +1112,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .engine-foot .btn{min-height:52px;padding:11px 28px;box-shadow:0 16px 36px -16px rgba(27,159,255,.72)}
 .engine-foot .btn::after{display:none}
 @keyframes engineAura{from{opacity:.55;transform:scale(.92)}to{opacity:1;transform:scale(1.08)}}
-@keyframes engineLive{0%,100%{opacity:.58;transform:scale(.88)}50%{opacity:1;transform:scale(1.08)}}
 @keyframes engineSweep{0%,18%{left:-34%;opacity:0}30%{opacity:.65}64%,100%{left:118%;opacity:0}}
 
-@media (prefers-reduced-motion:reduce){
-  .ew-video-toggle{display:none}
-}
 @media (forced-colors:active){
   .engine .grad-text{-webkit-text-fill-color:currentColor;background:none;color:Highlight}
 }
@@ -1708,7 +1707,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   .nav-cta{margin-left:auto;gap:8px}
   .nav-cta .nav-login{display:inline-flex;min-width:44px;min-height:44px;padding:0 4px;font-size:13px}
   .nav-cta .btn{padding:8px 13px;min-height:38px;font-size:12px}
-  .nav.scrolled{backdrop-filter:blur(14px);background:rgba(255,255,255,.92)}
+  /* Keep the fixed drawer viewport-sized: backdrop-filter on this ancestor would clip it to the 64px header. */
   .hero{padding-top:120px}
   .hero-screen{padding:0 var(--sp-4)}
   .screen-card{aspect-ratio:4/4.4;height:auto}
@@ -2337,11 +2336,11 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   </div>
   <div class="mobile-nav" id="mobileNav" hidden>
     <div class="mobile-nav-inner">
-      <div class="mobile-nav-head"><strong>浏览文数智旅</strong><button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="关闭导航">×</button></div>
-      <a class="mobile-nav-link" href="#">首页<span>→</span></a>
-      <a class="mobile-nav-link mobile-nav-login" href="https://app.zhilvtravel.com/login">登录<span>→</span></a>
+      <div class="mobile-nav-head"><strong>浏览文数智旅</strong><button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <a class="mobile-nav-link" href="#">首页<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <a class="mobile-nav-link mobile-nav-login" href="https://app.zhilvtravel.com/login">登录<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">产品</summary>
+        <summary class="mobile-nav-summary">产品<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="pages/product-wenxiaolv.html">文小旅 · AI 接待官</a>
           <a href="pages/product-itinerary.html">智策 · 方案生成</a>
@@ -2351,7 +2350,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
         </div>
       </details>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">解决方案</summary>
+        <summary class="mobile-nav-summary">解决方案<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="pages/tech-multilingual.html">多语种理解与生成</a>
           <a href="pages/tech-mining.html">智能挖需与画像</a>
@@ -2366,10 +2365,10 @@ button[disabled]{cursor:not-allowed;opacity:.72}
           <a href="pages/solution-data.html">全域数据增长方案</a>
         </div>
       </details>
-      <a class="mobile-nav-link" href="pages/cases.html">客户案例<span>→</span></a>
-      <a class="mobile-nav-link" href="pages/insights.html">洞察中心<span>→</span></a>
+      <a class="mobile-nav-link" href="pages/cases.html">客户案例<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <a class="mobile-nav-link" href="pages/insights.html">洞察中心<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">关于我们</summary>
+        <summary class="mobile-nav-summary">关于我们<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="#trust">关于文数智旅</a>
           <a href="#policy-evidence">政策与数据</a>
@@ -2377,7 +2376,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
           <a href="#coop">联系我们</a>
         </div>
       </details>
-      <button class="btn btn-gold mobile-nav-cta" type="button" data-lead data-source="mobile-nav" data-title="获取专属增长方案">获取专属增长方案 <span class="arrow">→</span></button>
+      <button class="btn btn-gold mobile-nav-cta" type="button" data-lead data-source="mobile-nav" data-title="获取专属增长方案">获取专属增长方案 <span class="mobile-nav-cta-icon arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
     </div>
   </div>
 </header>
@@ -2825,18 +2824,13 @@ button[disabled]{cursor:not-allowed;opacity:.72}
             <span>文旅 AI 咨询引擎</span>
           </div>
           <div class="ew-toolbar-meta">
-            <span class="ew-live">AI 正在处理</span>
+            <span class="ew-status">AI 处理流程</span>
             <span class="ew-scope">12 种语言 · 8 个时区</span>
-            <button class="ew-video-toggle" id="engineVideoToggle" type="button" aria-label="暂停视频" aria-pressed="false" data-paused="false" data-pause-label="暂停视频" data-play-label="播放视频" data-pause-text="暂停" data-play-text="播放">
-              <svg class="ew-toggle-pause" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2.5h3.25v11H3zm6.75 0H13v11H9.75z"/></svg>
-              <svg class="ew-toggle-play" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.2v11.6L13 8z"/></svg>
-              <span>暂停</span>
-            </button>
           </div>
         </div>
 
         <div class="ew-visual">
-          <video class="ew-video" data-engine-video data-src="assets/video/zhiyi/shot_01-remotion-v4.mp4" poster="assets/video/zhiyi/shot_01-remotion-v4.jpg" width="1254" height="720" muted loop playsinline preload="metadata" aria-label="文旅 AI 将海外咨询转化为行程方案"></video>
+          <video class="ew-video" data-engine-video data-src="assets/video/zhiyi/shot_01-remotion-v4.mp4" poster="assets/video/zhiyi/shot_01-remotion-v4.jpg" width="1254" height="720" muted playsinline preload="metadata" aria-label="文旅 AI 将海外咨询转化为行程方案"></video>
         </div>
 
         <ol class="ew-flow" aria-label="AI 咨询处理流程">
@@ -3213,14 +3207,13 @@ button[disabled]{cursor:not-allowed;opacity:.72}
       <div class="nm-proof-summary" aria-label="业务数据摘要">
         <span>10,000+ 海外客户触达</span><span>12 种主流语言</span><span>7 天上线流程</span>
       </div>
-      <button class="nm-proof-toggle" type="button" data-proof-toggle data-pause-label="暂停动态" data-play-label="继续动态" aria-controls="nm-proof-stage" aria-pressed="false">暂停动态</button>
     </header>
 
     <div class="nm-proof-stage reveal" id="nm-proof-stage" aria-label="文数智旅业务场景">
       <img class="nm-proof-bg" src="assets/navos-migration/proof-glow.svg" alt="" loading="lazy">
-      <div class="nm-proof-lanes" tabindex="0" aria-label="业务场景卡片流">
+      <div class="nm-proof-lanes" tabindex="0" aria-label="业务场景卡片">
         <div class="nm-proof-lane">
-          <div class="nm-proof-track" data-proof-track>
+          <div class="nm-proof-track">
             <article class="nm-proof-card">
               <header class="nm-proof-card__head"><img src="assets/generated/gen-callcenter.jpg" alt="" loading="lazy"><div><h3>国际旅行社</h3><span>全球客源拓展</span></div></header>
               <p>把海外官网、社媒与广告带来的咨询统一接入，优先识别高意向线索，再交给顾问跟进。</p>
@@ -3233,7 +3226,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
         </div>
 
         <div class="nm-proof-lane">
-          <div class="nm-proof-track" data-proof-track>
+          <div class="nm-proof-track">
             <article class="nm-proof-card">
               <header class="nm-proof-card__head"><img src="assets/generated/gen-airport.jpg" alt="" loading="lazy"><div><h3>入境游地接社</h3><span>多语种接待</span></div></header>
               <p>跨时区咨询先由 AI 接住并整理人数、时间、预算与偏好，减少等待，也减少反复确认。</p>
@@ -3246,7 +3239,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
         </div>
 
         <div class="nm-proof-lane">
-          <div class="nm-proof-track" data-proof-track>
+          <div class="nm-proof-track">
             <article class="nm-proof-card">
               <header class="nm-proof-card__head"><img src="assets/generated/gen-tea.jpg" alt="" loading="lazy"><div><h3>精品旅游公司</h3><span>定制方案生产</span></div></header>
               <p>围绕高净值客户偏好匹配线路与资源，先生成可编辑方案初稿，再由定制师完成价值判断。</p>
@@ -3748,8 +3741,8 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   var motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   var heroVisible = false, heroScreen = $(".hero-screen");
   var engineDemo = $("[data-engine-demo]"), engineVideo = $("[data-engine-video]");
-  var engineToggle = $("#engineVideoToggle"), engineSteps = engineDemo ? $$("[data-engine-step]", engineDemo) : [];
-  var engineVisible = false, enginePausedByUser = false;
+  var engineSteps = engineDemo ? $$("[data-engine-step]", engineDemo) : [];
+  var engineVisible = false;
   var lastHeroTick = performance.now();
 
   function staticVideo(video){
@@ -3777,14 +3770,6 @@ button[disabled]{cursor:not-allowed;opacity:.72}
       });
     });
   }
-  function updateEngineToggle(){
-    if(!engineToggle) return;
-    engineToggle.dataset.paused = String(enginePausedByUser);
-    engineToggle.setAttribute("aria-pressed", String(enginePausedByUser));
-    engineToggle.setAttribute("aria-label", enginePausedByUser ? engineToggle.dataset.playLabel : engineToggle.dataset.pauseLabel);
-    var label = $("span", engineToggle);
-    if(label) label.textContent = enginePausedByUser ? engineToggle.dataset.playText : engineToggle.dataset.pauseText;
-  }
   function paintEngineStep(){
     if(!engineDemo || !engineVideo || !engineSteps.length) return;
     var duration = Number.isFinite(engineVideo.duration) && engineVideo.duration > 0 ? engineVideo.duration : 5.04;
@@ -3798,11 +3783,10 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   }
   function syncEngineVideo(){
     if(!engineVideo || typeof engineVideo.pause !== "function") return;
-    if(motionPreference.matches || document.hidden || !engineVisible || enginePausedByUser){
+    if(motionPreference.matches || document.hidden || !engineVisible || engineVideo.dataset.static === "true" || engineVideo.ended){
       engineVideo.pause();
       if(motionPreference.matches && engineVideo.hasAttribute("src")){
-        engineVideo.removeAttribute("src");
-        engineVideo.load();
+        staticVideo(engineVideo);
         paintEngineStep();
       }
       return;
@@ -3815,28 +3799,19 @@ button[disabled]{cursor:not-allowed;opacity:.72}
     var attempt = engineVideo.play();
     if(attempt && attempt.catch) attempt.catch(function(error){
       if(error.name !== "AbortError"){
-        enginePausedByUser = true;
-        updateEngineToggle();
-        engineVideo.pause();
+        staticVideo(engineVideo);
+        paintEngineStep();
       }
     });
   }
   if(engineVideo){
     engineVideo.addEventListener("loadedmetadata", paintEngineStep);
+    engineVideo.addEventListener("ended", paintEngineStep);
     engineVideo.addEventListener("error", function(){
-      engineVideo.pause();
       if(engineVideo.hasAttribute("src")){
-        engineVideo.removeAttribute("src");
-        engineVideo.load();
+        staticVideo(engineVideo);
+        paintEngineStep();
       }
-    });
-  }
-  if(engineToggle){
-    updateEngineToggle();
-    engineToggle.addEventListener("click", function(){
-      enginePausedByUser = !enginePausedByUser;
-      updateEngineToggle();
-      syncEngineVideo();
     });
   }
   panes.forEach(function(p){
@@ -3868,6 +3843,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
       var v = $("video", p);
       if(v && !motionPreference.matches) delete v.dataset.static;
     });
+    if(engineVideo && !motionPreference.matches) delete engineVideo.dataset.static;
     lastHeroTick = performance.now();
     syncHeroVideo();
     syncEngineVideo();
@@ -4326,5 +4302,3 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 <script src="assets/js/navos-section.js"></script>
 </body>
 </html>
-
-\n

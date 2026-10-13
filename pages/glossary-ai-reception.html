@@ -209,19 +209,29 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .mobile-nav-inner{width:min(100%,520px);margin-left:auto;min-height:100%;background:var(--surface);box-shadow:-18px 0 48px rgba(11,16,41,.16);overflow-y:auto;padding:18px 20px 32px}
 .mobile-nav-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .mobile-nav-head strong{font-size:16px;color:var(--ink)}
-.mobile-nav-close{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:26px;line-height:1;cursor:pointer}
-.mobile-nav-close:hover,.mobile-nav-close:focus-visible{background:var(--bg-soft);color:var(--ink);outline:none}
-.mobile-nav-link,.mobile-nav-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:15px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;text-decoration:none;text-align:left;cursor:pointer}
-.mobile-nav-link:hover,.mobile-nav-link:focus-visible,.mobile-nav-summary:hover,.mobile-nav-summary:focus-visible{color:var(--primary);outline:none}
+.mobile-nav-close{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--bg-soft);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;transition:background var(--t-fast),color var(--t-fast),border-color var(--t-fast)}
+.mobile-nav-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.mobile-nav-close:hover,.mobile-nav-close:focus-visible{background:var(--primary-100);border-color:var(--primary);color:var(--primary)}
+.mobile-nav-close:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.mobile-nav-link,.mobile-nav-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:13px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;text-decoration:none;text-align:left;cursor:pointer}
+.mobile-nav-link:hover,.mobile-nav-link:focus-visible,.mobile-nav-summary:hover,.mobile-nav-summary:focus-visible{color:var(--primary)}
+.mobile-nav-link:focus-visible,.mobile-nav-summary:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;border-radius:8px}
 .mobile-nav-login{color:var(--primary);font-weight:700}
-.mobile-nav-summary::after{content:"＋";font-size:20px;font-weight:400;color:var(--muted);transition:transform var(--t-fast)}
-.mobile-nav-group[open]>.mobile-nav-summary::after{content:"－"}
+.mobile-nav-icon{width:36px;height:36px;flex:none;display:grid;place-items:center;border:1px solid rgba(0,97,255,.08);border-radius:12px;background:var(--bg-soft);color:var(--ink-2);transition:background var(--t-fast),color var(--t-fast),transform var(--t-fast)}
+.mobile-nav-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mobile-nav-link:hover .mobile-nav-icon,.mobile-nav-link:focus-visible .mobile-nav-icon,.mobile-nav-summary:hover .mobile-nav-icon,.mobile-nav-summary:focus-visible .mobile-nav-icon,.mobile-nav-login .mobile-nav-icon,.mobile-nav-group[open]>.mobile-nav-summary .mobile-nav-icon{background:var(--primary-100);color:var(--primary)}
+.mobile-nav-summary{list-style:none}
+.mobile-nav-summary::-webkit-details-marker{display:none}
+.mobile-nav-summary .mobile-nav-icon svg{transition:transform var(--t-fast)}
+.mobile-nav-group[open]>.mobile-nav-summary .mobile-nav-icon svg{transform:rotate(180deg)}
 .mobile-nav-group{border-bottom:1px solid var(--line)}
 .mobile-nav-group>.mobile-nav-summary{border-bottom:0}
 .mobile-nav-sub{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 0 14px}
 .mobile-nav-sub a{padding:10px 11px;border-radius:10px;background:var(--bg-soft);color:var(--ink-2);font-size:14px;line-height:1.35;text-decoration:none}
 .mobile-nav-sub a:hover,.mobile-nav-sub a:focus-visible{background:var(--primary-100);color:var(--primary);outline:none}
 .mobile-nav-cta{margin-top:18px;width:100%;justify-content:center}
+.mobile-nav-cta-icon{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.18)}
+.mobile-nav-cta-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ===== 知衣巨型下拉面板（1:1 复用） ===== */
 .nav-mega{position:relative}
@@ -1057,16 +1067,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .ew-brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--primary);color:#fff}
 .ew-brand-mark svg{width:17px;height:17px}
 .ew-toolbar-meta{display:flex;align-items:center;gap:14px;color:#c4d7f2}
-.ew-live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;letter-spacing:.03em}
-.ew-live::before{content:"";width:7px;height:7px;border-radius:50%;background:#48dfa0;box-shadow:0 0 0 4px rgba(72,223,160,.11);animation:engineLive 1.9s ease-in-out infinite}
+.ew-status{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;letter-spacing:.03em}
+.ew-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#48dfa0;box-shadow:0 0 0 4px rgba(72,223,160,.11)}
 .ew-scope{font-size:12px;color:#9fb5d4;letter-spacing:.03em}
-.ew-video-toggle{height:32px;display:inline-flex;align-items:center;gap:7px;padding:0 10px;border:1px solid rgba(190,219,255,.18);border-radius:9px;color:#dbeaff;background:rgba(255,255,255,.045);font-size:11.5px;font-weight:650}
-.ew-video-toggle:hover,.ew-video-toggle:focus-visible{color:#fff;border-color:rgba(112,190,255,.65);background:rgba(0,112,255,.13);outline:none}
-.ew-video-toggle:focus-visible{box-shadow:0 0 0 3px rgba(51,154,255,.22)}
-.ew-video-toggle svg{width:13px;height:13px}
-.ew-video-toggle .ew-toggle-play{display:none}
-.ew-video-toggle[data-paused="true"] .ew-toggle-pause{display:none}
-.ew-video-toggle[data-paused="true"] .ew-toggle-play{display:block}
 .ew-visual{position:relative;width:100%;aspect-ratio:1254/720;overflow:hidden;background:#dceafa}
 .ew-video{display:block;width:100%;height:100%;object-fit:cover;background:#dceafa}
 .ew-visual::before{
@@ -1099,12 +1102,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .engine-foot .btn{min-height:52px;padding:11px 28px;box-shadow:0 16px 36px -16px rgba(27,159,255,.72)}
 .engine-foot .btn::after{display:none}
 @keyframes engineAura{from{opacity:.55;transform:scale(.92)}to{opacity:1;transform:scale(1.08)}}
-@keyframes engineLive{0%,100%{opacity:.58;transform:scale(.88)}50%{opacity:1;transform:scale(1.08)}}
 @keyframes engineSweep{0%,18%{left:-34%;opacity:0}30%{opacity:.65}64%,100%{left:118%;opacity:0}}
 
-@media (prefers-reduced-motion:reduce){
-  .ew-video-toggle{display:none}
-}
 @media (forced-colors:active){
   .engine .grad-text{-webkit-text-fill-color:currentColor;background:none;color:Highlight}
 }
@@ -1698,7 +1697,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   .nav-cta{margin-left:auto;gap:8px}
   .nav-cta .nav-login{display:inline-flex;min-width:44px;min-height:44px;padding:0 4px;font-size:13px}
   .nav-cta .btn{padding:8px 13px;min-height:38px;font-size:12px}
-  .nav.scrolled{backdrop-filter:blur(14px);background:rgba(255,255,255,.92)}
+  /* Keep the fixed drawer viewport-sized: backdrop-filter on this ancestor would clip it to the 64px header. */
   .hero{padding-top:120px}
   .hero-screen{padding:0 var(--sp-4)}
   .screen-card{aspect-ratio:4/4.4;height:auto}
@@ -2818,11 +2817,11 @@ body.subpage{padding-top:0}
   </div>
   <div class="mobile-nav" id="mobileNav" hidden>
     <div class="mobile-nav-inner">
-      <div class="mobile-nav-head"><strong>浏览文数智旅</strong><button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="关闭导航">×</button></div>
-      <a class="mobile-nav-link" href="../index.html">首页<span>→</span></a>
-      <a class="mobile-nav-link mobile-nav-login" href="https://app.zhilvtravel.com/login">登录<span>→</span></a>
+      <div class="mobile-nav-head"><strong>浏览文数智旅</strong><button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <a class="mobile-nav-link" href="../index.html">首页<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <a class="mobile-nav-link mobile-nav-login" href="https://app.zhilvtravel.com/login">登录<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">产品</summary>
+        <summary class="mobile-nav-summary">产品<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="product-wenxiaolv.html">文小旅 · AI 接待官</a>
           <a href="product-itinerary.html">智策 · 方案生成</a>
@@ -2832,7 +2831,7 @@ body.subpage{padding-top:0}
         </div>
       </details>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">解决方案</summary>
+        <summary class="mobile-nav-summary">解决方案<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="tech-multilingual.html">多语种理解与生成</a>
           <a href="tech-mining.html">智能挖需与画像</a>
@@ -2847,10 +2846,10 @@ body.subpage{padding-top:0}
           <a href="solution-data.html">全域数据增长方案</a>
         </div>
       </details>
-      <a class="mobile-nav-link" href="cases.html">客户案例<span>→</span></a>
-      <a class="mobile-nav-link" href="insights.html">洞察中心<span>→</span></a>
+      <a class="mobile-nav-link" href="cases.html">客户案例<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <a class="mobile-nav-link" href="insights.html">洞察中心<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       <details class="mobile-nav-group">
-        <summary class="mobile-nav-summary">关于我们</summary>
+        <summary class="mobile-nav-summary">关于我们<span class="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></summary>
         <div class="mobile-nav-sub">
           <a href="../index.html#trust">关于文数智旅</a>
           <a href="../index.html#policy-evidence">政策与数据</a>
@@ -2858,7 +2857,7 @@ body.subpage{padding-top:0}
           <a href="../index.html#coop">联系我们</a>
         </div>
       </details>
-      <button class="btn btn-gold mobile-nav-cta" type="button" data-lead data-source="mobile-nav" data-title="获取专属增长方案">获取专属增长方案 <span class="arrow">→</span></button>
+      <button class="btn btn-gold mobile-nav-cta" type="button" data-lead data-source="mobile-nav" data-title="获取专属增长方案">获取专属增长方案 <span class="mobile-nav-cta-icon arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
     </div>
   </div>
 
