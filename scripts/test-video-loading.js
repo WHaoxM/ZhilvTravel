@@ -145,7 +145,8 @@ for (const route of ['index.html', 'en/index.html']) {
     assert(fs.existsSync(path.resolve(root, path.dirname(route), ref)), `${route}: missing larger-view video ${ref}`);
     assert(/\.mp4$/.test(ref) && label.trim(), `${route}: larger-view link needs a video and visible label`);
   }
-  assert(/\.pane-shot--video video\s*\{object-fit:contain\}/.test(html), `${route}: enlarged desktop stage must not crop video text`);
+  assert(/\.pane-shot--video video\s*\{[^}]*object-fit:contain[^}]*\}/.test(html), `${route}: hero video must not crop video text`);
+  assert(/\.screen-body\s*\{[^}]*aspect-ratio:16\s*\/\s*9[^}]*\}/.test(html), `${route}: hero stage must match the video ratio`);
 
   const engineTags = html.match(/<video\b[^>]*\bdata-engine-video\b[^>]*>/g) || [];
   assert.equal(engineTags.length, 1, `${route}: expected one data-engine-video demo`);

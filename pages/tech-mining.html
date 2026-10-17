@@ -1797,7 +1797,9 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 .screen-body{
   /* Reserve the tab rail instead of painting controls over the last rows of
      the dashboard/video frame. */
-  position:relative;inset:auto;width:100%;aspect-ratio:2549 / 1352;
+  /* The two demos are 16:9. Match the stage to the media instead of
+     letterboxing them inside an extra-wide, fixed-height desktop strip. */
+  position:relative;inset:auto;width:100%;aspect-ratio:16 / 9;
   overflow:hidden;border-radius:32px;
   -webkit-mask-image:none;mask-image:none;
 }
@@ -1815,9 +1817,9 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 .pane-shot img{width:100%;height:100%;object-fit:contain;background:#f2f5fd}
 .pane-shot--video{
   top:0;bottom:auto;aspect-ratio:auto;
-  background:#07121f;
+  background:#f2f5fd;
 }
-.pane-shot--video video{width:100%;height:100%;object-fit:contain;background:#07121f}
+.pane-shot--video video{width:100%;height:100%;object-fit:contain;background:#f2f5fd}
 .pane-shot figcaption{
   left:24px;top:24px;opacity:0;pointer-events:none;
   background:transparent;border-color:transparent;box-shadow:none;
@@ -1835,22 +1837,12 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 @media (max-width:860px){
   .hero-screen{margin:24px 16px 0;padding:0}
   .screen-card{width:100%;height:auto;aspect-ratio:auto;padding-bottom:58px}
-  .screen-body{aspect-ratio:2549 / 1352;border-radius:24px}
+  .screen-body{aspect-ratio:16 / 9;border-radius:24px}
   .pane-shot,.pane-shot--video{border-radius:24px}
   .screen-tabs{flex-wrap:wrap;gap:8px;padding:0 12px;bottom:14px}
   .stab{width:calc(33.333% - 6px);height:40px;font-size:13px;padding:0 4px}
   .pane-video-open{right:10px;bottom:10px;min-height:36px;padding:0 11px;font-size:12px}
 }
-/* 浏览器缩小后 CSS 视口会显著变宽。此时切换为参考站同款宽幅舞台：
-   高度保持稳定、内容横向铺开，避免整个首屏缩成页面中央的一张小卡片。
-   2549px 高清源图保证缩放后的实际屏幕像素仍然清晰。 */
-@media (min-width:1520px){
-  .hero-screen{max-width:none}
-  .screen-body{height:684px;aspect-ratio:auto}
-  .pane-shot img{object-fit:cover}
-  .pane-shot--video video{object-fit:contain}
-}
-
 /* S2 全域获客素材：真实附件以轻量轮播/静态媒体放入能力卡。
    沿用原卡片的右下大幅斜切画面，只替换其中素材与轮播能力。 */
 .sol-panel[data-panel="0"] .citem[data-growth-card]{

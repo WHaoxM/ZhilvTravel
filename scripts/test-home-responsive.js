@@ -320,38 +320,28 @@ function checkLayout(report, result) {
 
   const width = result.width;
   const hero = layout.hero;
-  const isWideStage = width >= 1520;
-  const expectedHeroWidth = width <= 860 ? width - 32 : isWideStage ? width : Math.min(width, 1519);
+  const expectedHeroWidth = width <= 860 ? width - 32 : Math.min(width, 1519);
   result.heroReference = {
     expectedOuterWidth: expectedHeroWidth,
     observedOuterWidth: hero.width,
     delta: round(hero.width - expectedHeroWidth),
-    note: "mobile side padding, bounded desktop stage, or wide zoom-stage; width is a CSS viewport, not a zoom percentage",
+    note: "mobile side padding or bounded desktop stage; width is a CSS viewport, not a zoom percentage",
   };
 
-  // Normal viewports preserve the 2549x1352 product ratio. Browser zoom-out
-  // produces a >=1520px CSS viewport; there the stage deliberately becomes
-  // full-width and holds a stable 684px height, matching the reference site's
-  // wide cinematic rhythm instead of shrinking into a small centered card.
-  if (!isWideStage && hero.width > 1519 + 1.5) {
+  // Keep the stage bounded and at the video ratio even when zoom-out creates
+  // a very wide CSS viewport. A fixed-height full-width strip pillarboxes the
+  // two 16:9 demos and clips the dashboard.
+  if (hero.width > 1519 + 1.5) {
     fail(report, result, "hero-width-cap", `bounded hero width ${hero.width}px exceeds 1519px`, { hero });
-  }
-  if (isWideStage && Math.abs(hero.width - width) > 1.5) {
-    fail(report, result, "hero-wide-width", `wide hero width ${hero.width}px does not fill the ${width}px CSS viewport`, { hero });
   }
   if (layout.screenBody) {
     const ratio = layout.screenBody.width / layout.screenBody.height;
     result.mediaFrameAspectRatio = round(ratio);
-    const expectedRatio = 2549 / 1352;
-    if (!isWideStage && Math.abs(ratio - expectedRatio) > 0.10) {
-      fail(report, result, "media-frame-ratio", `screen-body ratio ${ratio.toFixed(3)} is not close to 2549/1352 (${expectedRatio.toFixed(3)})`, {
+    const expectedRatio = 16 / 9;
+    if (Math.abs(ratio - expectedRatio) > 0.05) {
+      fail(report, result, "media-frame-ratio", `screen-body ratio ${ratio.toFixed(3)} is not close to 16/9 (${expectedRatio.toFixed(3)})`, {
         screenBody: layout.screenBody,
         expectedRatio,
-      });
-    }
-    if (isWideStage && Math.abs(layout.screenBody.height - 684) > 1.5) {
-      fail(report, result, "media-wide-height", `wide screen-body height ${layout.screenBody.height}px is not the stable 684px stage`, {
-        screenBody: layout.screenBody,
       });
     }
   } else {
@@ -397,7 +387,7 @@ function checkLayout(report, result) {
 
   const mediaWidths = layout.media.filter((item) => item.visible && item.box).map((item) => item.box.width);
   result.mediaMaxWidth = mediaWidths.length ? Math.max(...mediaWidths) : 0;
-  const expectedMediaMax = isWideStage ? width - 224 : 1295;
+  const expectedMediaMax = 1295;
   if (result.mediaMaxWidth > expectedMediaMax + 1.5) {
     fail(report, result, "media-width-cap", `hero media width ${result.mediaMaxWidth}px exceeds ${expectedMediaMax}px`, {
       mediaWidths,
@@ -437,11 +427,10 @@ function checkLayout(report, result) {
       decodedImages: intrinsicImages.map((item) => ({ src: item.src, width: item.naturalWidth, height: item.naturalHeight })),
     });
   }
-  // Wide still images may crop for visual weight; video keeps the entire
-  // workbench visible so captions and interface text are never cut off.
+  // Preserve the full dashboard and both video workbenches at every width.
   for (const [index, item] of layout.media.entries()) {
     if (!item.visible) continue;
-    const expectedObjectFit = item.tag === "VIDEO" ? "contain" : (isWideStage ? "cover" : "contain");
+    const expectedObjectFit = "contain";
     if (item.objectFit !== expectedObjectFit) {
       fail(report, result, "media-object-fit", `hero media ${index} (${item.tag}) uses object-fit:${item.objectFit || "unset"}; expected ${expectedObjectFit}`, {
         media: item,
@@ -520,6 +509,14 @@ async function checkTabs(page, report, result) {
         fail(report, result, "tab-switch", message, { selected });
       } else {
         summary.clicked += 1;
+        if (result.route === "zh" && result.width === 1920 && result.dpr === 1 &&
+            !process.env.HOME_RESPONSIVE_NO_SCREENSHOTS) {
+          await page.waitForTimeout(600);
+          const screenshotName = `hero-zh-w1920-seg${index}.png`;
+          const screenshotPath = path.join(ARTIFACT_ROOT, screenshotName);
+          await hero.screenshot({ path: screenshotPath, type: "png", animations: "disabled" });
+          report.screenshots.push(path.relative(PROJECT_ROOT, screenshotPath));
+        }
       }
     } catch (error) {
       const message = `tab ${index} click failed: ${error && error.message ? error.message : String(error)}`;
