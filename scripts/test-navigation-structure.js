@@ -33,6 +33,10 @@ for (const slug of destinations) {
 }
 
 function assertCurrentNav(relative, html, expected) {
+  const activeStyle = html.match(/\.nav-links \.is-current\{([^}]+)\}/)?.[1];
+  if (!activeStyle || /border-bottom|padding-bottom/.test(activeStyle)) {
+    throw new Error(`${relative}: current nav must not draw a line at the header edge`);
+  }
   const script = html.match(/\/\* 子页当前板块标记[^]*?\*\/\s*(\(function\(\)\{[^]*?\}\)\(\);)/);
   if (!script) throw new Error(`${relative}: missing current-section script`);
   const current = new Set();
