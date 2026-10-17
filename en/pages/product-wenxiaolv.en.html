@@ -3093,7 +3093,7 @@ body.subpage{padding-top:0}
         <textarea id="leaveMessage" name="message" placeholder="Enter your message and we will contact you shortly. (Required)" maxlength="8000" required></textarea>
         <input id="leaveName" name="name" type="text" placeholder="Name" maxlength="100" autocomplete="name">
         <input id="leavePhone" name="phone" type="tel" inputmode="tel" placeholder="Phone (required)" maxlength="40" autocomplete="tel" required>
-        <input id="leaveEmail" name="email" type="email" placeholder="Email" maxlength="320" autocomplete="email">
+        <input id="leaveEmail" name="email" type="email" placeholder="Email (required for confirmation)" maxlength="320" autocomplete="email" required>
         <input id="leaveAddress" name="companyAddress" type="text" placeholder="Company address (required)" maxlength="500" autocomplete="street-address" required>
         <p class="chat-leave-feedback" id="chatLeaveFeedback" role="status" aria-live="polite"></p>
         <button type="submit">Submit</button>
@@ -3113,9 +3113,10 @@ body.subpage{padding-top:0}
         <div class="f-field"><label for="m-phone"><em style="color:var(--gold-600)">*</em> Phone / WhatsApp</label><input type="tel" id="m-phone" name="phone" placeholder="Your phone or WhatsApp, including country code" autocomplete="tel" required></div>
         <div class="f-field"><label for="m-name">Your name</label><input type="text" id="m-name" name="name" placeholder="Your name"></div>
         <div class="f-field"><label for="m-company">Company name</label><input type="text" id="m-company" name="company" placeholder="Your company"></div>
+        <div class="f-field"><label for="m-email"><em style="color:var(--gold-600)">*</em> Email</label><input type="email" id="m-email" name="email" placeholder="For your request confirmation email" autocomplete="email" maxlength="320" required></div>
         <div class="f-field"><label for="m-address">* Company address</label><input type="text" id="m-address" name="companyAddress" placeholder="Province, city and full company address" maxlength="500" autocomplete="street-address" required></div>
-        <div class="f-field"><label for="m-type">Business type</label>
-          <select id="m-type" name="type">
+        <div class="f-field"><label for="m-type"><em style="color:var(--gold-600)">*</em> Business type</label>
+          <select id="m-type" name="type" required>
             <option value="">Select your business type</option>
             <option>International travel agency</option><option>Inbound ground operator</option>
             <option>Boutique travel studio</option><option>Scenic spot / culture-tourism group</option><option>Other</option>
@@ -3257,6 +3258,8 @@ body.subpage{padding-top:0}
       failed: "提交暂未成功，请稍后重试，或直接拨打 13558835750。",
       submitting: "正在提交，请稍候…",
       invalidPhone: "Please enter a valid phone number, including the country code if needed.",
+      invalidEmail: "请填写有效Email,以便接收申请确认Email。",
+      missingBusinessType: "请选择Business type,以便顾问准确跟进。",
       chatPrefill: "已识别到您的手机号。请在弹窗中补充称呼与公司后提交，顾问即可为您跟进。"
     },
     en: {
@@ -3265,6 +3268,8 @@ body.subpage{padding-top:0}
       failed: "We could not submit your request yet. Please try again later or call +86 135 5883 5750.",
       submitting: "Submitting, please wait…",
       invalidPhone: "Please enter a valid phone number, including the country code if needed.",
+      invalidEmail: "Please enter a valid email address for your confirmation.",
+      missingBusinessType: "Please select your business type so we can route your request.",
       chatPrefill: "We detected your phone number. Please complete your name and company in the form so our consultant can follow up."
     }
   };
@@ -3307,13 +3312,21 @@ body.subpage{padding-top:0}
   }
   /* 入境游客户可能来自海外：接受国家区号、空格、短横线与括号，至少 6 位数字。 */
   function validPhone(v){ return /^\+?[\d ()-]{6,40}$/.test(v) && v.replace(/\D/g, "").length >= 6; }
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) && v.length <= 320; }
+  function intentForSource(source){
+    if(source === "nav-custom") return "custom_consultation";
+    if(source === "rail-doc") return "resource_request";
+    if(/^(hero-demo|rail-demo|engine|agent|solution-sale|solution-consult|tech-[a-z-]+-banner)$/.test(source)) return "product_demo";
+    return "growth_plan";
+  }
 
   /* ---------- 留资模态窗 ---------- */
   var leadMask = $("#leadMask"), leadTitle = $("#leadTitle"),
-      leadFormWrap = $("#leadFormWrap"), leadSuccess = $("#leadSuccess"), currentLeadSource = "modal";
+      leadFormWrap = $("#leadFormWrap"), leadSuccess = $("#leadSuccess"), currentLeadSource = "modal", currentLeadIntent = "growth_plan";
   function openLeadDialog(opts){
     opts = opts || {};
     currentLeadSource = opts.source || currentLeadSource || "modal";
+    currentLeadIntent = opts.intent || intentForSource(currentLeadSource);
     leadTitle.textContent = opts.title || leadText("defaultTitle");
     leadFormWrap.style.display = "";
     leadSuccess.classList.remove("show");
@@ -3327,7 +3340,7 @@ body.subpage{padding-top:0}
   }
   $$("[data-lead]").forEach(function(btn){
     btn.addEventListener("click", function(){
-      openLeadDialog({ source: btn.dataset.source || "cta", title: btn.dataset.title || leadText("defaultTitle") });
+      openLeadDialog({ source: btn.dataset.source || "cta", intent: btn.dataset.intent, title: btn.dataset.title || leadText("defaultTitle") });
     });
   });
   $("#leadClose").addEventListener("click", function(){ closeMask(leadMask); });
@@ -3338,15 +3351,23 @@ body.subpage{padding-top:0}
     var phone = $("#m-phone"), ok = validPhone(phone.value.trim());
     phone.classList.toggle("err", !ok);
     if(!ok){ showFeedback(form, "error", leadText("invalidPhone")); phone.focus(); return; }
+    var email = $("#m-email"), emailOk = validEmail(email.value.trim());
+    email.classList.toggle("err", !emailOk);
+    if(!emailOk){ showFeedback(form, "error", leadText("invalidEmail")); email.focus(); return; }
+    var business = $("#m-type");
+    business.classList.toggle("err", !business.value);
+    if(!business.value){ showFeedback(form, "error", leadText("missingBusinessType")); business.focus(); return; }
     clearFeedback(form);
     setSubmitting(form, true);
     submitLead({
       source: currentLeadSource,
+      intent: currentLeadIntent,
       phone: phone.value.trim(),
       name: $("#m-name").value.trim(),
       company: $("#m-company").value.trim(),
       companyAddress: $("#m-address").value.trim(),
-      businessType: $("#m-type").value
+      businessType: business.value,
+      email: email.value.trim()
     }).then(function(){
       leadFormWrap.style.display = "none";
       leadSuccess.classList.add("show");
@@ -3357,6 +3378,8 @@ body.subpage{padding-top:0}
     }).finally(function(){ setSubmitting(form, false); });
   });
   $("#m-phone").addEventListener("input", function(){ this.classList.remove("err"); clearFeedback($("#leadForm")); });
+  $("#m-email").addEventListener("input", function(){ this.classList.remove("err"); clearFeedback($("#leadForm")); });
+  $("#m-type").addEventListener("change", function(){ this.classList.remove("err"); clearFeedback($("#leadForm")); });
 
   /* ---------- 快捷栏Online chat ---------- */
   var railChat = $("#railWechat");

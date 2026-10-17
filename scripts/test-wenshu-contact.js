@@ -17,6 +17,21 @@ test('address required before network request', async () => {
   const api = setup(() => { throw new Error('Must not send'); });
   await assert.rejects(api.submitLead({ ...form, companyAddress: '' }), /公司地址/);
 });
+test('classified request carries intent, email and business type; missing email is not sent', async () => {
+  const posted = [];
+  const api = setup(async (_, options) => {
+    posted.push(JSON.parse(options.body));
+    return { ok: true, json: async () => ({ ok: true, id: 'classified-receipt' }) };
+  });
+  const classified = { ...form, source: 'hero-demo', intent: 'product_demo', email: 'buyer@example.com' };
+  await assert.rejects(api.submitLead({ ...classified, email: '' }), /有效邮箱/);
+  await assert.rejects(api.submitLead({ ...classified, businessType: '' }), /业务类型/);
+  await api.submitLead(classified);
+  assert.equal(posted.length, 1);
+  assert.equal(posted[0].intent, 'product_demo');
+  assert.equal(posted[0].email, 'buyer@example.com');
+  assert.equal(posted[0].business_type, form.businessType);
+});
 
 test('closed chat opens the offline lead without reopening IM', async () => {
   function element() {
@@ -55,7 +70,7 @@ test('closed chat opens the offline lead without reopening IM', async () => {
   window.WenshuContact.initChat(); nodes.chatFab.handlers.click();
   await new Promise(resolve => setImmediate(resolve));
   assert.equal(nodes.chatEnded.hidden, false);
-  nodes.leaveMessage.value = '请安排英文导游'; nodes.leavePhone.value = '13800000000'; nodes.leaveAddress.value = '成都测试地址';
+  nodes.leaveMessage.value = '请安排英文导游'; nodes.leavePhone.value = '13800000000'; nodes.leaveAddress.value = '成都测试地址'; nodes.leaveEmail.value = 'buyer@example.com';
   nodes.chatLeave.handlers.click(); await nodes.chatLeaveForm.handlers.submit({ preventDefault() {} });
   assert.deepEqual(actions.filter(item => item.action === 'lead').map(item => item.method), ['POST']);
   assert.equal(actions.filter(item => item.action === 'messages' && item.method === 'POST').length, 0);
@@ -89,6 +104,13 @@ test('generated forms have address and real messaging script in all languages', 
   for (const file of ['index.html', 'en/index.html', 'pages/product-wenxiaolv.html', 'en/pages/product-wenxiaolv.en.html']) {
     const html = fs.readFileSync(path.join(__dirname, '../dist', file), 'utf8');
     assert(html.includes('id="m-address"'), file);
+    assert.match(html, /id="m-email"[^>]*required/, file);
+    assert.match(html, /id="m-type"[^>]*required/, file);
+    assert.match(html, /id="leaveEmail"[^>]*required/, file);
+    if (file.endsWith('index.html')) {
+      assert.match(html, /id="f-email"[^>]*required/, file);
+      assert.match(html, /id="f-type"[^>]*required/, file);
+    }
     assert(html.includes('wenshu-contact.js'), file);
     assert(html.includes('window.WenshuContact.initChat()'), file);
     assert(html.includes('id="chatLeaveForm"'), file);

@@ -8,8 +8,8 @@
     if (!base) throw new Error(text('咨询服务暂不可用，请拨打 13558835750。', 'Please call +86 13558835750.'));
     var u = new URL(base); u.searchParams.set('action', action); return u;
   }
-  async function request(u, method, body, headers) {
-    var controller = new AbortController(), timer = setTimeout(function () { controller.abort(); }, 15000);
+  async function request(u, method, body, headers, timeoutMs) {
+    var controller = new AbortController(), timer = setTimeout(function () { controller.abort(); }, timeoutMs || 15000);
     try {
       var r = await fetch(String(u), { method: method, credentials: 'omit', cache: 'no-store',
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers || {}),
@@ -23,13 +23,17 @@
   async function submitLead(data) {
     var payload = { name: data.name, phone: data.phone, company: data.company,
       company_address: data.companyAddress, business_type: data.businessType,
-      source: data.source, page_url: location.origin + location.pathname,
+      source: data.source, intent: data.intent || undefined, page_url: location.origin + location.pathname,
       message: data.message || '', email: data.email || '' };
     if (!payload.company_address || !payload.company_address.trim()) throw new Error(text('请填写公司地址。', 'Please enter your company address.'));
+    if (payload.intent && (!payload.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email))) {
+      throw new Error(text('请填写有效邮箱，以便接收申请确认邮件。', 'Please enter a valid email address for your confirmation.'));
+    }
+    if (payload.intent && !payload.business_type) throw new Error(text('请选择业务类型。', 'Please select your business type.'));
     var fingerprint = JSON.stringify(payload);
     if (!pendingLead || pendingLead.fingerprint !== fingerprint) pendingLead = { fingerprint: fingerprint, id: crypto.randomUUID() };
     try {
-      var r = await request(url('lead'), 'POST', payload, { 'Idempotency-Key': pendingLead.id });
+      var r = await request(url('lead'), 'POST', payload, { 'Idempotency-Key': pendingLead.id }, 45000);
       if (!r.id) throw new Error('Missing receipt');
       pendingLead = null; return r;
     } catch { throw new Error(text('暂未确认提交成功，您填写的内容已保留。请重试或拨打 13558835750。', 'Submission not confirmed. Your entries are retained. Retry or call +86 13558835750.')); }
@@ -180,13 +184,13 @@
       var message = document.getElementById('leaveMessage').value.trim(), phone = document.getElementById('leavePhone').value.trim(), address = document.getElementById('leaveAddress').value.trim();
       var name = document.getElementById('leaveName').value.trim(), email = document.getElementById('leaveEmail').value.trim(), feedback = document.getElementById('chatLeaveFeedback'), button = form.querySelector('button[type="submit"]');
       if (!message || !phone || !address || !/^\+?[\d ()-]{6,40}$/.test(phone) || phone.replace(/\D/g, '').length < 6) { feedback.className = 'chat-leave-feedback'; feedback.textContent = text('请填写留言、有效电话和公司地址。', 'Please enter a message, valid phone and company address.'); return; }
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { feedback.className = 'chat-leave-feedback'; feedback.textContent = text('请填写有效邮箱，或暂时留空。', 'Please enter a valid email address or leave it blank.'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { feedback.className = 'chat-leave-feedback'; feedback.textContent = text('请填写有效邮箱，以接收留言确认邮件。', 'Please enter a valid email address for your message confirmation.'); return; }
       if (button) button.disabled = true; feedback.className = 'chat-leave-feedback'; feedback.textContent = text('正在提交，请稍候…', 'Submitting, please wait…');
       try {
         // The lead row is the durable offline channel. Never create/reopen an IM
         // conversation just because a visitor left a message after staff closed it.
         var hadActiveConversation = Boolean(conversation && token && !ended);
-        await submitLead({ source: 'offline-message', phone: phone, name: name, company: '', companyAddress: address, businessType: '人工客服留言', message: message, email: email });
+        await submitLead({ source: 'offline-message', intent: 'offline_message', phone: phone, name: name, company: '', companyAddress: address, businessType: '人工客服留言', message: message, email: email });
         if (hadActiveConversation) {
           var note = '【人工客服留言】\n留言内容：' + message + '\n姓名：' + (name || '未填写') + '\n电话：' + phone + '\n邮箱：' + (email || '未填写') + '\n公司地址：' + address;
           if (note.length > 8000) note = note.slice(0, 7990) + '…';

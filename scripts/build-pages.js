@@ -851,7 +851,7 @@ function techSkeleton(cfg) {
 ${/^(?:data|tech)-/.test(cfg.slug) ? `    <nav class="sp-solution-location" aria-label="解决方案当前位置"><a href="../index.html#solution">解决方案</a><span class="location-separator" aria-hidden="true">/</span><span aria-current="page">${cfg.h1.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()}</span></nav>\n` : ""}    <span class="tech-eyebrow">${cfg.eyebrow}</span>
     <h1 class="tech-title">${cfg.h1}</h1>
     <div class="tech-sub">${cfg.bannerTip}</div>
-    <button class="tech-cta" data-lead data-source="${cfg.slug}-banner" data-title="获取专属增长方案"><span>预约体验</span><span>→</span></button>
+    <button class="tech-cta" data-lead data-source="${cfg.slug}-banner" data-intent="product_demo" data-title="预约产品体验"><span>预约体验</span><span>→</span></button>
   </div>
 </section>
 
