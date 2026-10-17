@@ -3406,7 +3406,7 @@ body.subpage{padding-top:0}
   /* 子页当前板块标记；Home入口保留原生导航。 */
   (function(){
     var slug = location.pathname.split('/').pop().replace(/(?:\.en)?\.html$/, '');
-    var section = slug === 'cases' ? 'cases' : /^(insight|event|glossary)/.test(slug) || slug === 'insights' ? 'insights' : /^(solution-)/.test(slug) ? 'solutions' : 'products';
+    var section = slug === 'cases' ? 'cases' : /^(insight|event|glossary)/.test(slug) || slug === 'insights' ? 'insights' : /^(solution-|tech-|data-)/.test(slug) ? 'solutions' : 'products';
     var nav = document.querySelector('.nav-links');
     if(!nav) return;
     var target = section === 'cases' ? nav.querySelector('a[href*="cases.html"],a[href*="cases.en.html"]')

@@ -7,7 +7,7 @@
     "dev": "node scripts/serve-static-site.js",
     "polish": "node scripts/polish-site.js",
     "build": "node scripts/build-pages.js && node scripts/build-en.js && node scripts/build-en-pages.js && node scripts/build-static-site.js",
-    "validate": "node scripts/validate-static-site.js && node --test scripts/test-wenshu-contact.js",
+    "validate": "node scripts/validate-static-site.js && node scripts/test-navigation-structure.js && node --test scripts/test-wenshu-contact.js",
     "test:home-responsive": "node scripts/test-home-responsive.js",
     "test:home-growth": "node scripts/test-home-growth-media.js",
     "test:home-reception": "node scripts/test-home-reception-media.js",
