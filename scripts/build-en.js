@@ -373,7 +373,6 @@ const T = [
   ["无法持续追踪线索进度", "Cannot continuously track lead progress"],
   ["缺少资源库与报价联动", "No connection between resources and quoting"],
   ["难以连接后续交付流程", "Hard to connect downstream delivery"],
-  ["相关数据仅作参考，实际结果因业务基础与实施范围而异。", "The figures are provided for reference; results vary by business context and implementation scope."],
 
   ["Built for Every Role", "Built for Every Role"],
   ["适配文旅团队的不同角色", "Built for Every Travel Team Role"],
@@ -409,7 +408,6 @@ const T = [
   ["一线旅行顾问", "Travel Advisors"],
   ["人机协同", "Human + AI Collaboration"],
   ["常规咨询由 AI 持续承接，高意向或复杂需求一键转人工，把顾问时间留给真正需要人的时刻。", "AI keeps routine conversations moving while high-intent or complex needs transfer to people, preserving advisor time for moments that need it."],
-  ["所示数据仅作参考，实际结果因项目范围、业务基础与实施条件而异。", "The figures are provided for reference; results vary by project scope, business context and implementation conditions."],
 
   ["Connected Ecosystem", "Connected Ecosystem"],
   ["无缝构建入境游增长生态", "Build a Seamless Inbound Growth Ecosystem"],

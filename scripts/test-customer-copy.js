@@ -32,6 +32,10 @@ for (const label of ['English Inquiry', 'Japanese Inquiry', 'Arabic Inquiry']) {
   assert(multilingual.includes(`data-title="${label}"`), `English subpage has a clipped inquiry label: ${label}`);
 }
 const enHome = fs.readFileSync(path.join(root, 'en/index.html'), 'utf8');
+for (const home of [fs.readFileSync(path.join(root, 'index.html'), 'utf8'), enHome]) {
+  assert(!home.includes('nm-compare-note'), 'homepage retains generic note under comparison or workflow cards');
+  assert(!/相关数据仅作参考|所示数据仅作参考|The figures are provided for reference/.test(home), 'homepage retains generic disclaimer');
+}
 const ecosystem = enHome.match(/<section class="nm-section nm-ecosystem"[\s\S]*?<\/section>/)?.[0] || '';
 assert(ecosystem.includes('Build a Seamless Inbound Growth Ecosystem') && ecosystem.includes('Connected workflow stages'), 'English ecosystem section must be translated');
 assert(!/无缝构建入境游增长生态|可衔接的业务环节|海外官网/.test(ecosystem), 'English ecosystem section contains untranslated Chinese copy');
