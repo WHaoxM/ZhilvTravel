@@ -1479,6 +1479,8 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   display:flex;align-items:center;gap:10px;color:#fff;box-shadow:0 14px 32px -8px rgba(0,97,255,.38);
   transition:transform var(--t-fast) var(--ease-out-quart),box-shadow var(--t-fast),filter var(--t-fast);
 }
+.chat-fab-unread{position:absolute;right:-4px;top:-5px;min-width:21px;height:21px;padding:0 5px;border:2px solid #fff;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:700;line-height:17px;text-align:center;box-shadow:0 2px 7px rgba(0,0,0,.18)}
+.chat-fab-unread[hidden]{display:none}
 .chat-fab:hover,.chat-fab:focus-visible{transform:translateY(-2px);box-shadow:0 18px 36px -8px rgba(0,97,255,.48);filter:saturate(1.08);outline:3px solid rgba(0,97,255,.2);outline-offset:3px}
 .chat-fab-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;display:block;flex:none;background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.55)}
 .chat-fab-avatar img{width:100%;height:100%;object-fit:cover;display:block}
@@ -1526,11 +1528,22 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 .cp-chips-label{width:100%;font-size:11px;color:#8b94a5;line-height:1.2}
 .cp-chip{font-size:12px;font-weight:600;color:#356fe8;border:1.5px solid #d8e4ff;border-radius:99px;padding:8px 13px;background:#f8faff;transition:background var(--t-fast),border-color var(--t-fast),color var(--t-fast),transform var(--t-fast);cursor:pointer}
 .cp-chip:hover,.cp-chip:focus-visible{border-color:#6e96ff;background:#edf3ff;color:#1f59d8;outline:none;transform:translateY(-1px)}
-.cp-tools{display:flex;align-items:center;gap:14px;padding:10px 14px 3px;border-top:1px solid #edf0f6;background:#fff;color:#636b78}
-.cp-tool{width:24px;height:24px;padding:0;border:0;border-radius:7px;background:transparent;color:inherit;display:grid;place-items:center;font-size:20px;line-height:1;cursor:pointer;transition:background var(--t-fast),color var(--t-fast)}
+.cp-tools{display:flex;align-items:center;gap:9px;padding:7px 12px 5px;border-top:1px solid #edf0f6;background:#fff;color:#636b78}
+.cp-tool{width:40px;height:40px;padding:0;border:0;border-radius:9px;background:transparent;color:inherit;display:grid;place-items:center;font-size:20px;line-height:1;cursor:pointer;transition:background var(--t-fast),color var(--t-fast)}
 .cp-tool:hover,.cp-tool:focus-visible{color:#356fe8;background:#f0f4ff;outline:none}
 .cp-tool svg{width:20px;height:20px;stroke:currentColor}
+.cp-tools .cp-tool[aria-pressed="true"]{color:#1f59d8;background:#edf3ff}
+.cp-emoji-menu{display:flex;gap:5px;flex-wrap:wrap;padding:2px 12px 8px;background:#fff}
+.cp-emoji-menu[hidden],.cp-attachment-retry[hidden]{display:none}
+.cp-emoji-menu button{width:40px;height:40px;border:0;border-radius:8px;background:#f6f8fc;font-size:22px;cursor:pointer}
+.cp-emoji-menu button:hover,.cp-emoji-menu button:focus-visible{background:#edf3ff;outline:2px solid #a9c2ff}
 .cp-tool-hint{margin:0;padding:5px 14px 7px;background:#fff;color:#687387;font-size:11px;line-height:1.45}
+.cp-attachment-retry{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;padding:6px 12px;background:#fff7f4;color:#a74432;font-size:11px}
+.cp-attachment-retry button{border:1px solid #f0b7aa;border-radius:999px;padding:5px 11px;background:#fff;color:#9f3d2d;font:inherit;cursor:pointer}
+.cp-msg.cp-attachment{max-width:min(84%,320px);padding:8px;background:#f7f9fe}
+.cp-attachment-image{display:block;width:min(100%,280px);max-height:240px;object-fit:contain;border-radius:8px}
+.cp-attachment-link{display:flex;align-items:center;gap:8px;color:#245db7;font-size:12px;font-weight:600;overflow-wrap:anywhere}
+.cp-attachment-size{display:block;color:#718096;font-size:10px;font-weight:400}
 .cp-contact{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
 .cp-contact input{flex:1;min-width:0;border:1px solid #dfe5f2;border-radius:999px;padding:9px 12px;font-size:12px;font-family:inherit;color:var(--ink);background:#fbfcff}
 .cp-contact input::placeholder{color:#a3acbc}
@@ -1590,7 +1603,9 @@ button[disabled]{cursor:not-allowed;opacity:.72}
   .cp-actions{flex:none;gap:4px}
   .cp-action{width:44px;height:44px}
   .cp-speaker,#chatMin{display:none}
-  .cp-welcome,.cp-tools,.cp-tool-hint,.cp-foot{display:none}
+  .cp-welcome,.cp-foot{display:none}
+  .cp-tools{gap:4px;padding:4px 8px}
+  .cp-tool{width:44px;height:44px}
   .cp-body{padding:12px;gap:9px;overscroll-behavior:contain;scroll-behavior:auto}
   .cp-msg{font-size:14px;line-height:1.5;padding:10px 12px}
   .cp-chips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;gap:8px;padding:8px 12px;scrollbar-width:none}
@@ -1621,7 +1636,7 @@ button[disabled]{cursor:not-allowed;opacity:.72}
 @media (min-width:601px) and (max-width:860px) and (max-height:500px){
   .chat-panel{top:68px;bottom:12px;height:auto;max-height:none}
   .cp-head{min-height:60px}
-  .cp-welcome,.cp-tools,.cp-tool-hint,.cp-foot,.cp-chips,.cp-contact{display:none}
+  .cp-welcome,.cp-foot,.cp-chips,.cp-contact{display:none}
 }
 @media (prefers-reduced-motion:reduce){.chat-panel.open{animation:none}}
 /* 模态窗 */
@@ -2993,6 +3008,7 @@ Best,
 <button class="chat-fab" id="chatFab" aria-label="Open support chat" aria-controls="chatPanel" aria-expanded="false" data-mode="chat">
   <span class="chat-fab-avatar"><img src="../../assets/generated/gen-agent-main.jpg" alt="Customer Support"></span>
   <span class="chat-fab-copy"><b>Online chat</b><small>Customer Support</small></span>
+  <span class="chat-fab-unread" id="chatUnread" role="status" aria-live="polite" aria-label="Unread support replies" hidden></span>
 </button>
 <div class="chat-panel" id="chatPanel" role="dialog" aria-modal="true" aria-labelledby="chatPanelTitle">
   <div class="cp-head">
@@ -3024,18 +3040,26 @@ Best,
     <button class="cp-chip" type="button" data-q="Book a Consultation">Book a Consultation</button>
   </div>
   <div class="cp-tools" role="toolbar" aria-label="Chat tools">
-    <button class="cp-tool" type="button" data-tool="emoji" aria-label="Insert emoji"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/><path d="M8.5 14c1 1.5 2.2 2.2 3.5 2.2s2.5-.7 3.5-2.2"/></svg></button>
+    <button class="cp-tool" type="button" data-tool="emoji" aria-label="Open emoji picker" aria-expanded="false" aria-controls="chatEmojiMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/><path d="M8.5 14c1 1.5 2.2 2.2 3.5 2.2s2.5-.7 3.5-2.2"/></svg></button>
     <button class="cp-tool" type="button" data-tool="image" aria-label="Image">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m4 17 5-5 3 3 2-2 6 5"/></svg>
     </button>
     <button class="cp-tool" type="button" data-tool="file" aria-label="File">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H10l2 2h5.5A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/></svg>
     </button>
-    <button class="cp-tool" type="button" data-tool="reminder" aria-label="Notifications">
+    <button class="cp-tool" type="button" data-tool="reminder" aria-label="Turn on reply alerts" aria-pressed="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 9a5 5 0 0 1 10 0c0 6 2 6 2 7H5c0-1 2-1 2-7Z"/><path d="M10 19h4"/></svg>
     </button>
   </div>
+  <div class="cp-emoji-menu" id="chatEmojiMenu" role="group" aria-label="Choose an emoji" hidden>
+    <button type="button" data-emoji="😊" aria-label="Smile">😊</button><button type="button" data-emoji="😂" aria-label="Laugh">😂</button>
+    <button type="button" data-emoji="🥰" aria-label="Love">🥰</button><button type="button" data-emoji="👍" aria-label="Like">👍</button>
+    <button type="button" data-emoji="🙏" aria-label="Thanks">🙏</button><button type="button" data-emoji="✅" aria-label="Confirm">✅</button>
+  </div>
   <p class="cp-tool-hint" id="chatToolHint" role="status" aria-live="polite" hidden></p>
+  <div class="cp-attachment-retry" id="chatAttachmentRetry" role="status" hidden><span id="chatAttachmentRetryText">Attachment send not confirmed</span><button type="button" id="chatAttachmentRetryButton">Retry attachment</button><button type="button" id="chatAttachmentDiscardButton">Discard and choose another file</button></div>
+  <input id="chatImageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif" hidden aria-label="Choose an image to upload">
+  <input id="chatFileInput" type="file" accept="application/pdf,text/plain,text/csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pdf,.txt,.csv,.docx,.xlsx,.pptx" hidden aria-label="Choose a file to upload">
   <div class="cp-contact"><input id="chatPhone" type="tel" inputmode="tel" autocomplete="tel" aria-label="Phone (optional)" placeholder="Leave your phone so a consultant can reach you"><a href="tel:13558835750"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h3l1.3 4-2 1.4a14 14 0 0 0 5.3 5.3l1.4-2 4 1.3v3A2 2 0 0 1 18 19C10.8 18.6 5.4 13.2 5 6a2 2 0 0 1 2-2Z"/></svg>Call us</a></div>
   <div class="cp-input">
     <input type="text" id="chatInput" aria-label="Message" placeholder="Type your message" maxlength="8000">
