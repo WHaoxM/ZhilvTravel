@@ -15,28 +15,11 @@
         headers: Object.assign({ 'Content-Type': 'application/json' }, headers || {}),
         body: body ? JSON.stringify(body) : undefined, signal: controller.signal });
       var result = await r.json();
-      if (!r.ok || result.ok !== true) { var error = new Error(result.error || 'Request failed'); error.status = r.status; throw error; }
+      if (!r.ok || result.ok !== true) { var error = new Error('Request failed'); error.status = r.status; throw error; }
       return result;
     } finally { clearTimeout(timer); }
   }
   var pendingLead = null;
-  var CHAT_FILE_TYPES = {
-    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif',
-    pdf: 'application/pdf', txt: 'text/plain', csv: 'text/csv',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-  };
-  function inspectClientFile(file, kind) {
-    var extension = String(file && file.name || '').split('.').pop().toLowerCase(), contentType = CHAT_FILE_TYPES[extension];
-    var image = ['jpg', 'jpeg', 'png', 'webp', 'gif'].indexOf(extension) >= 0;
-    if (!contentType || (kind === 'image' ? !image : image)) throw new Error(text('不支持此文件类型，请选择常见图片或 PDF、TXT、CSV、DOCX、XLSX、PPTX 文件。', 'Unsupported type. Choose an image or PDF, TXT, CSV, DOCX, XLSX, or PPTX file.'));
-    var limit = kind === 'image' ? 8 * 1024 * 1024 : 15 * 1024 * 1024;
-    if (!file.size || file.size > limit) throw new Error(kind === 'image'
-      ? text('图片大小不能超过 8 MB。', 'Images must be 8 MB or smaller.')
-      : text('文件大小不能超过 15 MB。', 'Files must be 15 MB or smaller.'));
-    return { filename: file.name, contentType: contentType, byteSize: file.size, kind: kind };
-  }
   async function submitLead(data) {
     var payload = { name: data.name, phone: data.phone, company: data.company,
       company_address: data.companyAddress, business_type: data.businessType,
@@ -78,13 +61,9 @@
     body.replaceChildren(); body.setAttribute('aria-live', 'polite');
     var phoneNode = document.getElementById('chatPhone');
     var ended = false, endedPanel = document.getElementById('chatEnded'), tools = panel.querySelector('.cp-tools'), contact = phoneNode && phoneNode.parentElement,
-        inputWrap = input && input.parentElement, speaker = document.getElementById('chatSpeaker'), retry = document.getElementById('chatRetry'), retryButton = document.getElementById('chatRetryButton'),
-        imageInput = document.getElementById('chatImageInput'), fileInput = document.getElementById('chatFileInput'), emojiMenu = document.getElementById('chatEmojiMenu'),
-        attachmentRetry = document.getElementById('chatAttachmentRetry'), attachmentRetryButton = document.getElementById('chatAttachmentRetryButton'), attachmentDiscardButton = document.getElementById('chatAttachmentDiscardButton'),
-        attachmentRetryText = document.getElementById('chatAttachmentRetryText'), unreadBadge = document.getElementById('chatUnread');
+        inputWrap = input && input.parentElement, speaker = document.getElementById('chatSpeaker'), retry = document.getElementById('chatRetry'), retryButton = document.getElementById('chatRetryButton');
     var token = '', conversation = '', seq = 0, polling = false, sending = false, connecting = false, hydrated = false, timer, epoch = 0;
-    var failed = null, failedAttachment = null, seen = new Set(), storage = 'wenshu_support_session_v2';
-    var notificationEnabled = false, unreadCount = 0, attachmentLinksLoadedAt = 0, attachmentNodes = Object.create(null), attachmentMessages = Object.create(null);
+    var failed = null, seen = new Set(), storage = 'wenshu_support_session_v2';
     try { token = sessionStorage.getItem(storage) || ''; } catch { /* In-memory session works without storage. */ }
     function state(value, kind) {
       if (ended && kind !== 'ended') return;
@@ -95,85 +74,13 @@
       var el = document.createElement('div'); el.className = 'cp-msg ' + who; el.textContent = value;
       body.appendChild(el); body.scrollTop = body.scrollHeight;
     }
-    function formatBytes(value) {
-      var bytes = Number(value) || 0;
-      return bytes >= 1024 * 1024 ? (bytes / (1024 * 1024)).toFixed(1) + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB';
-    }
-    function appendAttachment(message, who) {
-      var metadata = message && message.metadata && typeof message.metadata === 'object' ? message.metadata : {};
-      var id = typeof metadata.attachmentId === 'string' ? metadata.attachmentId : '';
-      if (!id) { append(text('附件暂时无法显示。', 'This attachment is unavailable.'), who); return; }
-      var node = document.createElement('div'); node.className = 'cp-msg ' + who + ' cp-attachment';
-      var name = document.createElement('span'); name.className = 'cp-attachment-name';
-      name.textContent = typeof metadata.filename === 'string' ? metadata.filename : (message.body || text('附件', 'Attachment'));
-      node.appendChild(name);
-      var size = document.createElement('span'); size.className = 'cp-attachment-size';
-      size.textContent = formatBytes(metadata.byteSize); node.appendChild(size);
-      body.appendChild(node); body.scrollTop = body.scrollHeight;
-      attachmentNodes[id] = node; attachmentMessages[id] = message;
-    }
-    async function refreshAttachmentLinks(force) {
-      var ids = Object.keys(attachmentNodes);
-      if (!ids.length || !conversation || !token || (!force && Date.now() - attachmentLinksLoadedAt < 240000)) return;
-      attachmentLinksLoadedAt = Date.now();
-      try {
-        for (var offset = 0; offset < ids.length; offset += 50) {
-          var batch = ids.slice(offset, offset + 50), u = url('media-links');
-          u.searchParams.set('conversation', conversation);
-          var result = await request(u, 'POST', { attachmentIds: batch }, { 'X-Wenshu-Session': token });
-          var urls = result.urls || {};
-          batch.forEach(function (id) {
-            var node = attachmentNodes[id], message = attachmentMessages[id], href = urls[id];
-            if (!node || !message || !href) return;
-            var metadata = message.metadata || {}, isImage = message.content_type === 'image';
-            node.replaceChildren();
-            var anchor = document.createElement('a'); anchor.href = href; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
-            anchor.referrerPolicy = 'no-referrer';
-            if (isImage) {
-              var img = document.createElement('img'); img.className = 'cp-attachment-image';
-              img.src = href; img.alt = metadata.filename || text('咨询图片', 'Chat image'); img.loading = 'lazy'; img.referrerPolicy = 'no-referrer';
-              anchor.appendChild(img); anchor.setAttribute('aria-label', text('打开图片预览', 'Open image preview'));
-              node.appendChild(anchor);
-              var caption = document.createElement('span'); caption.textContent = metadata.filename || '';
-              node.appendChild(caption);
-            } else {
-              anchor.className = 'cp-attachment-link'; anchor.textContent = text('下载：', 'Download: ') + (metadata.filename || message.body || text('附件', 'Attachment'));
-              node.appendChild(anchor);
-              var size = document.createElement('span'); size.className = 'cp-attachment-size'; size.textContent = formatBytes(metadata.byteSize); node.appendChild(size);
-            }
-          });
-        }
-      } catch {
-        attachmentLinksLoadedAt = Date.now() - 180000;
-        ids.forEach(function (id) {
-          var node = attachmentNodes[id];
-          if (!node || node.getAttribute('data-link-error') === 'true') return;
-          node.setAttribute('data-link-error', 'true');
-          var note = document.createElement('span'); note.textContent = text('附件暂时无法加载，请稍后重试。', 'Attachment unavailable. Please retry shortly.');
-          node.appendChild(note);
-        });
-      }
-    }
-    function notifyStaffReply(message) {
-      if (panel.classList.contains('open')) { playNotify(); return; }
-      unreadCount += 1;
-      if (unreadBadge) { unreadBadge.textContent = unreadCount > 9 ? '9+' : String(unreadCount); unreadBadge.hidden = false; }
-      var NotificationApi = window.Notification;
-      if (notificationEnabled && NotificationApi && NotificationApi.permission === 'granted' && (document.hidden || (document.hasFocus && !document.hasFocus()))) {
-        try { new NotificationApi(text('文数智旅客服', 'Wenshu Travel support'), {
-          body: message.body || text('客服回复了一条消息。', 'Support sent a reply.'),
-          tag: 'wenshu-support-' + conversation,
-          icon: '/assets/generated/gen-agent-avatar.jpg'
-        }); } catch { /* In-page unread indicator remains available. */ }
-      }
-    }
     function appendStartMeta() {
       var now = new Date(), time = now.toLocaleTimeString(en ? 'en-US' : 'zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
       var stamp = document.createElement('div'); stamp.className = 'cp-time'; stamp.textContent = text('今天 ' + time + ' 开始沟通', 'Today ' + time + ' · Chat started'); body.appendChild(stamp);
       var label = document.createElement('div'); label.className = 'cp-agent-label'; label.textContent = text('文小旅客服  今天 ' + time, 'Wenshu support  Today ' + time); body.appendChild(label);
     }
     function resetMessages() {
-      body.replaceChildren(); hydrated = false; attachmentNodes = Object.create(null); attachmentMessages = Object.create(null); attachmentLinksLoadedAt = 0; appendStartMeta();
+      body.replaceChildren(); hydrated = false; appendStartMeta();
       append(text('您好，请留下您的问题。客服回复后会显示在这里；紧急事项请致电 13558835750。', 'Hello, please leave your question. Staff replies will appear here. For urgent requests call +86 13558835750.'), 'bot');
     }
     function appendStaffMeta(m) {
@@ -192,15 +99,11 @@
         oscillator.connect(gain); gain.connect(audio.destination); oscillator.start(); oscillator.stop(audio.currentTime + 0.08);
       } catch { /* Notification sound is optional and browser-gated. */ }
     }
-    function render(items, notify) { var hasAttachments = false; (items || []).forEach(function (m) {
+    function render(items, notify) { (items || []).forEach(function (m) {
       if (!m || !m.id) return;
-      if (!seen.has(m.id)) { seen.add(m.id); if (m.sender_type !== 'visitor') {
-        appendStaffMeta(m);
-        if (m.content_type === 'image' || m.content_type === 'file') { appendAttachment(m, 'bot'); hasAttachments = true; } else append(m.body, 'bot');
-        if (notify && m.sender_type === 'staff') notifyStaffReply(m);
-      } else if (m.content_type === 'image' || m.content_type === 'file') { appendAttachment(m, 'user'); hasAttachments = true; } else append(m.body, 'user'); }
+      if (!seen.has(m.id)) { seen.add(m.id); if (m.sender_type !== 'visitor') { appendStaffMeta(m); append(m.body, 'bot'); if (notify) playNotify(); } else append(m.body, 'user'); }
       var messageSeq = Number(m.seq); if (Number.isFinite(messageSeq)) seq = Math.max(seq, messageSeq);
-    }); if (hasAttachments) void refreshAttachmentLinks(true); }
+    }); }
     function setEnded(value) {
       ended = value;
       if (ended) {
@@ -241,8 +144,7 @@
       run = Number.isFinite(run) ? run : epoch;
       if (run !== epoch) return;
       clearTimeout(timer);
-      var shouldPoll = panel.classList.contains('open') || reminderEnabled || !document.hidden;
-      if (polling || ended || !conversation || !shouldPoll) return;
+      if (polling || ended || !conversation || document.hidden || !panel.classList.contains('open')) return;
       polling = true;
       try {
         var activeConversation = conversation;
@@ -250,69 +152,15 @@
         var r = await request(u, 'GET', null, { 'X-Wenshu-Session': token });
         if (run !== epoch || conversation !== activeConversation) return;
         render(r.items, hydrated); hydrated = true;
-        if (Date.now() - attachmentLinksLoadedAt >= 240000) await refreshAttachmentLinks(true);
         if (r.conversation && r.conversation.status === 'closed') { expire(true); return; }
         state(text('已连接 · 回复后会显示在这里', 'Connected · Replies appear here'), 'online');
       } catch (e) { if (run !== epoch) return; if (e.status === 401) { expire(false); if (panel.classList.contains('open')) setTimeout(connect, 0); } else state(text('连接中断，消息已保留，请重新连接', 'Disconnected. Please reconnect.'), 'error'); }
-      finally {
-        polling = false;
-        var keepPolling = panel.classList.contains('open') || reminderEnabled || !document.hidden;
-        if (run === epoch && conversation && !ended && keepPolling) timer = setTimeout(function () { poll(run); }, 4000);
-      }
+      finally { polling = false; if (run === epoch && conversation && !ended && panel.classList.contains('open')) timer = setTimeout(function () { poll(run); }, 4000); }
     }
     async function postVisitorBody(outbound, id) {
       if (!conversation) { await connect(); if (!conversation) throw new Error('Conversation unavailable'); }
       var u = url('messages'); u.searchParams.set('conversation', conversation);
       return await request(u, 'POST', { body: outbound, contentType: 'text' }, { 'X-Wenshu-Session': token, 'Idempotency-Key': id || crypto.randomUUID() });
-    }
-    async function postVisitorAttachment(file, kind, clientUploadId, clientMessageId) {
-      if (!conversation) { await connect(); if (!conversation) throw new Error('Conversation unavailable'); }
-      var fileInfo = inspectClientFile(file, kind), mediaUrl = url('media-upload');
-      mediaUrl.searchParams.set('conversation', conversation);
-      var ticketResponse = await request(mediaUrl, 'POST', { clientUploadId: clientUploadId, file: fileInfo }, {
-        'X-Wenshu-Session': token, 'Idempotency-Key': clientUploadId
-      }, 20000);
-      var ticket = ticketResponse.ticket;
-      if (!ticket || !ticket.attachmentId) throw new Error(text('附件上传暂不可用。', 'Attachment upload is unavailable.'));
-      if (ticket.uploadUrl) {
-        var controller = new AbortController(), uploadTimer = setTimeout(function () { controller.abort(); }, 90000);
-        try {
-          var uploaded = await fetch(ticket.uploadUrl, { method: 'PUT', credentials: 'omit', cache: 'no-store',
-            headers: { 'Content-Type': ticket.contentType, 'If-None-Match': '*' }, body: file, signal: controller.signal });
-          if (uploaded.status === 412) {
-            // An earlier retry may have completed the immutable object already.
-            var checked = await request(mediaUrl, 'POST', { clientUploadId: clientUploadId, file: fileInfo }, {
-              'X-Wenshu-Session': token, 'Idempotency-Key': clientUploadId
-            }, 20000);
-            ticket = checked.ticket;
-            if (!ticket || ticket.uploadUrl) throw new Error(text('附件正在处理中，请稍后重试。', 'Attachment upload is being checked. Please retry shortly.'));
-          } else if (!uploaded.ok) throw new Error(text('图片或文件上传失败，请重试。', 'Upload failed. Please retry the attachment.'));
-        } finally { clearTimeout(uploadTimer); }
-      }
-      var messageUrl = url('messages'); messageUrl.searchParams.set('conversation', conversation);
-      return await request(messageUrl, 'POST', { body: fileInfo.filename, contentType: kind,
-        clientMessageId: clientMessageId, metadata: { attachmentId: ticket.attachmentId } }, {
-        'X-Wenshu-Session': token, 'Idempotency-Key': clientMessageId
-      }, 20000);
-    }
-    async function sendAttachment(pending) {
-      if (sending || connecting || !pending) return;
-      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        state(text('当前处于离线状态，请恢复网络后重试', 'You are offline. Reconnect and try again.'), 'error'); return;
-      }
-      sending = true; if (send) send.disabled = true;
-      if (attachmentRetryText) attachmentRetryText.textContent = text('正在安全上传附件…', 'Uploading attachment securely…');
-      try {
-        var result = await postVisitorAttachment(pending.file, pending.kind, pending.uploadId, pending.messageId);
-        if (result && result.message) render([result.message], false);
-        failedAttachment = null; if (attachmentRetry) attachmentRetry.hidden = true;
-        await poll(); state(text('附件已发送', 'Attachment sent'), 'online');
-      } catch (e) {
-        failedAttachment = pending;
-        if (attachmentRetry) attachmentRetry.hidden = false;
-        if (attachmentRetryText) attachmentRetryText.textContent = (pending.file && pending.file.name ? pending.file.name + ' · ' : '') + text('附件发送未确认', 'Attachment send not confirmed');
-        state((e && e.message) || text('附件发送未确认，请重试。', 'Attachment send not confirmed. Please retry.'), 'error');
-      } finally { sending = false; if (send) send.disabled = false; }
     }
     async function sendMessage() {
       if (sending || connecting) return;
@@ -361,7 +209,6 @@
     }
     function openChat() {
       syncChatViewport(); panel.classList.add('open'); backdrop.classList.add('open'); document.body.classList.add('chat-is-open');
-      unreadCount = 0; if (unreadBadge) { unreadBadge.hidden = true; unreadBadge.textContent = ''; }
       fab.setAttribute('aria-expanded', 'true'); fab.setAttribute('aria-label', text('关闭在线咨询', 'Close support chat')); fab.style.display = 'none';
       // On phones, focusing the composer immediately opens the keyboard and shrinks the dialog.
       var initialFocus = window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? document.getElementById('chatClose') : input;
@@ -369,7 +216,7 @@
       if (ended || !conversation) connect(); else poll();
     }
     fab.addEventListener('click', openChat);
-    function closePanel(mode) { panel.classList.remove('open', 'composing', 'phone-entry'); backdrop.classList.remove('open'); document.body.classList.remove('chat-is-open'); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-label', text('打开在线咨询', 'Open support chat')); setFabMode(mode === 'minimize' ? 'resume' : 'chat'); fab.style.display = ''; if (document.hidden && !reminderEnabled) clearTimeout(timer); else if (conversation && !ended && !document.hidden) poll(); if (fab.focus) fab.focus(); }
+    function closePanel(mode) { panel.classList.remove('open', 'composing', 'phone-entry'); backdrop.classList.remove('open'); document.body.classList.remove('chat-is-open'); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-label', text('打开在线咨询', 'Open support chat')); setFabMode(mode === 'minimize' ? 'resume' : 'chat'); fab.style.display = ''; clearTimeout(timer); if (fab.focus) fab.focus(); }
     backdrop.addEventListener('click', function () { closePanel('minimize'); });
     var min = document.getElementById('chatMin'); if (min) min.addEventListener('click', function () { closePanel('minimize'); });
     var close = document.getElementById('chatClose');
@@ -388,102 +235,14 @@
     if (speaker) speaker.addEventListener('click', function () { var muted = speaker.getAttribute('aria-pressed') === 'true'; speaker.setAttribute('aria-pressed', String(!muted)); speaker.classList.toggle('muted', !muted); speaker.setAttribute('aria-label', !muted ? text('打开提示音', 'Unmute notifications') : text('静音提示音', 'Mute notifications')); });
     var toolHint = document.getElementById('chatToolHint');
     function showToolHint(value) { if (!toolHint) return; toolHint.textContent = value; toolHint.hidden = false; clearTimeout(showToolHint.timer); showToolHint.timer = setTimeout(function () { toolHint.hidden = true; }, 3200); }
-    var reminderButton = panel.querySelector('[data-tool="reminder"]'), emojiButton = panel.querySelector('[data-tool="emoji"]');
-    var reminderEnabled = false;
-    try { reminderEnabled = sessionStorage.getItem('wenshu_reply_reminder') === 'true'; } catch { /* Tab-local in-page fallback still works. */ }
-    notificationEnabled = Boolean(reminderEnabled && window.Notification && window.Notification.permission === 'granted');
-    function syncReminderButton() {
-      if (!reminderButton) return;
-      reminderButton.setAttribute('aria-pressed', String(reminderEnabled));
-      reminderButton.setAttribute('aria-label', reminderEnabled ? text('关闭新回复提醒', 'Turn off reply alerts') : text('开启新回复提醒', 'Turn on reply alerts'));
-      if (reminderButton.classList && reminderButton.classList.toggle) reminderButton.classList.toggle('is-on', reminderEnabled);
-    }
-    syncReminderButton();
-    function setReminderEnabled(value) {
-      reminderEnabled = value;
-      notificationEnabled = Boolean(value && window.Notification && window.Notification.permission === 'granted');
-      try { sessionStorage.setItem('wenshu_reply_reminder', String(value)); } catch { /* Preference is optional. */ }
-      syncReminderButton();
-      if (value) poll();
-      else if (!panel.classList.contains('open') && document.hidden) clearTimeout(timer);
-    }
-    async function toggleReminder() {
-      if (reminderEnabled) {
-        setReminderEnabled(false); showToolHint(text('新回复提醒已关闭。', 'Reply alerts are off.')); return;
-      }
-      setReminderEnabled(true);
-      var NotificationApi = window.Notification;
-      if (!NotificationApi || typeof NotificationApi.requestPermission !== 'function') {
-        showToolHint(text('此浏览器不支持系统通知；客服新回复会显示在页面内。', 'System notifications are unavailable; new replies will use the in-page indicator.')); return;
-      }
-      if (NotificationApi.permission === 'denied') {
-        showToolHint(text('系统通知已被浏览器拒绝；新回复会显示在页面内。', 'Browser notifications are blocked; new replies will use the in-page indicator.')); return;
-      }
-      if (NotificationApi.permission === 'granted') {
-        notificationEnabled = true;
-        showToolHint(text('已开启新回复提醒；会话未结束时将继续检查回复。', 'Reply alerts are on while this conversation remains active.')); return;
-      }
-      try {
-        var permission = await NotificationApi.requestPermission();
-        notificationEnabled = permission === 'granted';
-        showToolHint(permission === 'granted'
-          ? text('已允许系统通知；会话未结束时将继续检查回复。', 'System alerts are enabled while this conversation remains active.')
-          : text('未允许系统通知；新回复会显示在页面内。', 'System alerts were not allowed; new replies will use the in-page indicator.'));
-      } catch {
-        notificationEnabled = false;
-        showToolHint(text('无法开启系统通知；新回复会显示在页面内。', 'System alerts are unavailable; new replies will use the in-page indicator.'));
-      }
-      poll();
-    }
     var toolButtons = panel.querySelectorAll ? panel.querySelectorAll('.cp-tool') : [];
     Array.prototype.forEach.call(toolButtons, function (tool) {
       tool.addEventListener('click', function () {
         var kind = tool.getAttribute('data-tool');
-        if (kind === 'emoji') {
-          var open = Boolean(emojiMenu && emojiMenu.hidden);
-          if (emojiMenu) emojiMenu.hidden = !open;
-          tool.setAttribute('aria-expanded', String(open));
-          if (open && emojiMenu) { var first = emojiMenu.querySelector('button'); if (first && first.focus) first.focus(); }
-          return;
-        }
-        if (kind === 'image' || kind === 'file') {
-          showToolHint(kind === 'image'
-            ? text('支持 JPG、PNG、WEBP、GIF 图片，单张不超过 8 MB。', 'JPG, PNG, WEBP, or GIF images up to 8 MB.')
-            : text('支持 PDF、TXT、CSV、DOCX、XLSX、PPTX 文件，单个不超过 15 MB。', 'PDF, TXT, CSV, DOCX, XLSX, or PPTX files up to 15 MB.'));
-          var picker = kind === 'image' ? imageInput : fileInput;
-          if (picker) picker.click();
-          return;
-        }
-        if (kind === 'reminder') void toggleReminder();
+        if (kind === 'emoji') { input.value += (input.value ? ' ' : '') + '😊'; input.focus(); return; }
+        showToolHint(text('当前支持文字咨询；图片和文件可在留言中说明，客服会继续跟进。', 'Text chat is supported here. Describe an image or file in your message and our team will follow up.'));
       });
     });
-    function insertEmoji(value) {
-      var start = typeof input.selectionStart === 'number' ? input.selectionStart : input.value.length;
-      var end = typeof input.selectionEnd === 'number' ? input.selectionEnd : start;
-      input.value = input.value.slice(0, start) + value + input.value.slice(end);
-      var cursor = start + value.length;
-      if (input.setSelectionRange) input.setSelectionRange(cursor, cursor);
-      if (emojiMenu) emojiMenu.hidden = true;
-      if (emojiButton) emojiButton.setAttribute('aria-expanded', 'false');
-      if (input.focus) input.focus();
-    }
-    if (emojiMenu && emojiMenu.querySelectorAll) Array.prototype.forEach.call(emojiMenu.querySelectorAll('[data-emoji]'), function (emoji) {
-      emoji.addEventListener('click', function () { insertEmoji(emoji.getAttribute('data-emoji') || '😊'); });
-    });
-    function bindFilePicker(picker, kind) {
-      if (!picker) return;
-      picker.addEventListener('change', function () {
-        var file = picker.files && picker.files[0]; picker.value = '';
-        if (!file) return;
-        if (failedAttachment) { showToolHint(text('请先重试或放弃当前附件，再选择其他文件。', 'Retry or discard the pending attachment before choosing another.')); return; }
-        try { inspectClientFile(file, kind); }
-        catch (error) { showToolHint((error && error.message) || text('不支持此文件。', 'Unsupported file.')); return; }
-        void sendAttachment({ file: file, kind: kind, uploadId: crypto.randomUUID(), messageId: crypto.randomUUID() });
-      });
-    }
-    bindFilePicker(imageInput, 'image'); bindFilePicker(fileInput, 'file');
-    if (attachmentRetryButton) attachmentRetryButton.addEventListener('click', function () { if (failedAttachment) void sendAttachment(failedAttachment); });
-    if (attachmentDiscardButton) attachmentDiscardButton.addEventListener('click', function () { failedAttachment = null; if (attachmentRetry) attachmentRetry.hidden = true; state(text('可以选择其他附件。', 'You can choose another attachment.'), 'online'); });
     if (retryButton) retryButton.addEventListener('click', function () { expire(false); setEnded(false); connect(); });
     var continueButton = document.getElementById('chatContinue');
     if (continueButton) continueButton.addEventListener('click', function () {
@@ -516,11 +275,8 @@
       window.addEventListener('offline', function () { if (panel.classList.contains('open') && !ended) state(text('当前处于离线状态，请恢复网络后重试', 'You are offline. Reconnect and try again.'), 'error'); });
       window.addEventListener('online', function () { if (panel.classList.contains('open') && conversation && !ended) { state(text('网络已恢复，正在重新连接…', 'Back online. Reconnecting…'), 'connecting'); poll(); } });
     }
-    document.addEventListener('visibilitychange', function () { if (!document.hidden || reminderEnabled) poll(); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) poll(); });
     window.WenshuContact.openChat = openChat;
-    // A tab-local reminder survives a reload. Rehydrate the existing session
-    // quietly so the initial history cannot trigger a notification.
-    if (reminderEnabled && token) connect();
   }
   window.WenshuContact = { submitLead: submitLead, initChat: initChat, openChat: null };
 })();
