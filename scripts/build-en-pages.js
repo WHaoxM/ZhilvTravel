@@ -19,6 +19,9 @@ const DICT = JSON.parse(fs.readFileSync(path.join(__dirname, "dict-all.json"), "
 function loadSharedPatches() {
   /* 从 build-en.js 抽取：简单方式 —— 复用其表定义太耦合，这里直接内联最小集 */
   return [
+    ['填写邮箱和业务类型，顾问审核后将通过邮箱跟进', 'Enter your email and business type. An advisor will follow up by email after review.'],
+    ['确认邮件已发送；顾问审核后将通过您填写的邮箱跟进', 'Confirmation email sent. An advisor will follow up at your email address after review.'],
+    ['提交表单，顾问审核后通过邮箱跟进', 'Submit your request — an advisor will follow up by email after review.'],
     /* 导航 */
     ["理解需求、生成方案，让顾问更快接住跨语种咨询。", "Understand needs and build plans so advisors can respond across languages."],
     ["看清客源市场、入境趋势与海外社媒讨论。", "Understand source markets, inbound trends and overseas conversations."],

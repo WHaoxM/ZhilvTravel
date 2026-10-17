@@ -196,7 +196,7 @@
           if (note.length > 8000) note = note.slice(0, 7990) + '…';
           try { await postVisitorBody(note, crypto.randomUUID()); } catch { /* The lead receipt remains authoritative. */ }
         }
-        feedback.className = 'chat-leave-feedback ok'; feedback.textContent = text('留言已提交，我们会尽快与您联系。', 'Your message was received. We will contact you shortly.');
+        feedback.className = 'chat-leave-feedback ok'; feedback.textContent = text('留言已提交，请查收确认邮件；客服审核后将通过邮箱跟进。', 'Message received. Please check your confirmation email; our team will follow up by email after review.');
         form.reset(); setTimeout(function () { var mask = document.getElementById('chatLeaveMask'); if (mask) mask.classList.remove('open'); }, 1800);
       } catch (e) { feedback.className = 'chat-leave-feedback'; feedback.textContent = (e && e.message) || text('提交未确认，请重试或拨打 13558835750。', 'Submission not confirmed. Please retry or call +86 13558835750.'); }
       finally { if (button) button.disabled = false; }

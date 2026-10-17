@@ -99,6 +99,12 @@ out = out.replace(
 );
 
 /* ---------- 3. 文案替换（按出现顺序，精确匹配中文片段） ---------- */
+for (const [zh, english] of [
+  ['提交需求后将收到确认邮件；顾问审核后会通过邮箱跟进方案沟通', 'You will receive a confirmation email; an advisor will follow up by email after reviewing your request.'],
+  ['确认邮件已发送；顾问审核后将通过您填写的邮箱跟进', 'Confirmation email sent. An advisor will follow up at your email address after review.'],
+  ['提交表单，顾问审核后通过邮箱跟进', 'Submit your request — an advisor will follow up by email after review.'],
+  ['填写邮箱和业务类型，顾问审核后将通过邮箱跟进', 'Enter your email and business type. An advisor will follow up by email after review.'],
+]) out = out.split(zh).join(english);
 const T = [
   /* ===== S2 AI 接待截图（先于通用短串翻译，避免 aria/alt 被部分替换） ===== */
   ['aria-label="智能需求挖掘客户标签截图轮播"', 'aria-label="Smart intent mining customer tag screenshots carousel"'],
